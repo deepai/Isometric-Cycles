@@ -88,6 +88,15 @@ public:
 		if (!direction)
 			insert(b, a, wt, chain_index, edge_index, true);
 	}
+
+	void insert(int a, int b, int wt, bool direction) {
+		columns->push_back(b);
+		rows->push_back(a);
+		weights->push_back(wt);
+
+		if (!direction)
+			insert(b, a, wt, true);
+	}
 	//Calculate the degree of the vertices and create the rowOffset
 	/**
 	 * @brief [brief description]

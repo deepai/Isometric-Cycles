@@ -66,7 +66,7 @@ int main(int argc, char **argv)
 	//firt line of the input file contains the number of nodes and edges
 	Reader.get_nodes_edges(nodes, edges);
 
-	csr_graph *graph = new csr_graph();
+	csr_multi_graph *graph = new csr_multi_graph();
 
 	graph->Nodes = nodes;
 	graph->initial_edge_count = edges;
@@ -82,6 +82,8 @@ int main(int argc, char **argv)
 
 	graph->calculateDegreeandRowOffset();
 	Reader.fileClose();
+
+	compressed_trees trees(nodes, nodes, graph);
 
 
 	return 0;
