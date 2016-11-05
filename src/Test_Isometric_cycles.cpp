@@ -28,7 +28,7 @@
 #include "cycle_searcher.h"
 #include "stats.h"
 #include "FVS.h"
-#include "compressed_trees.h"
+#include "shortest_path_trees.h"
 
 HostTimer globalTimer;
 
@@ -83,7 +83,8 @@ int main(int argc, char **argv)
 	graph->calculateDegreeandRowOffset();
 	Reader.fileClose();
 
-	compressed_trees trees(nodes, nodes, graph);
+	shortest_path_tree tree(nodes,0,*graph);
+	tree.calculate_sp_tree();
 
 
 	return 0;
