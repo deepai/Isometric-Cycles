@@ -101,6 +101,24 @@ int main(int argc, char **argv)
 						non_tree_edges_map[graph->reverse_edge->at(i)];
 	}
 
+	std::vector<shortest_path_tree*> sp_trees(nodes);
+
+
+//calculate and construct shortest path trees.
+#pragma omp parallel for 
+	for(int i = 0; i < sp_trees.size(); ++i)
+	{
+		sp_trees[i] = new shortest_path_tree(nodes,i,*graph);
+		sp_trees[i]->calculate_sp_tree();
+	}
+
+
+	//clear the memory
+	for(int i=0;i<sp_trees.size();i++)
+		if(sp_trees[i] != NULL)
+			delete sp_trees[i];
+
+	sp_trees.clear();
 
 	return 0;
 }

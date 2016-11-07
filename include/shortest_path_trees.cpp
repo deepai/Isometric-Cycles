@@ -49,8 +49,7 @@ void shortest_path_tree::calculate_sp_tree()
 
 					minimum_node_in_path[dest] = std::min(dest,val.first);
 
-				} else if (distance[val.first] + edge_weight
-						< distance[dest]) {
+				} else if (distance[val.first] + edge_weight < distance[dest]) {
 					distance[dest] = distance[val.first] + edge_weight;
 					pq.push(std::make_pair(dest, distance[dest]));
 					parent[dest] = val.first;
