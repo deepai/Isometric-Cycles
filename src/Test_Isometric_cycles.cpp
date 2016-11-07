@@ -26,6 +26,7 @@
 #include "bit_vector.h"
 #include "stats.h"
 #include "shortest_path_trees.h"
+#include "cycles.h"
 
 HostTimer globalTimer;
 
@@ -102,6 +103,7 @@ int main(int argc, char **argv)
 	}
 
 	std::vector<shortest_path_tree*> sp_trees(nodes);
+	std::vector<std::vector<cycle> > sp_cycles(nodes);
 
 
 //calculate and construct shortest path trees.
@@ -114,11 +116,19 @@ int main(int argc, char **argv)
 
 
 	//clear the memory
+#pragma omp parallel for
+	for(int i=0;i<sp_cycles.size();i++)
+	{
+		sp_cycles[i].clear();
+	}
+
+#pragma omp parallel for
 	for(int i=0;i<sp_trees.size();i++)
 		if(sp_trees[i] != NULL)
 			delete sp_trees[i];
 
 	sp_trees.clear();
+	sp_cycles.clear();
 
 	return 0;
 }
