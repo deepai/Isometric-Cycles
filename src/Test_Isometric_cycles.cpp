@@ -114,6 +114,7 @@ int main(int argc, char **argv)
 		sp_trees[i]->calculate_sp_tree();
 	}
 
+//check for every non-tree edge, if a valid cycle is formed. if the cycle is valid, add it.
 #pragma omp parallel for
 	for(int i=0; i < nodes; i++)
 	{
@@ -129,6 +130,14 @@ int main(int argc, char **argv)
 			}
 		}
 	}
+
+size_t total_num_cycles = 0;
+
+#pragma omp parallel for reduction(+:total_num_cycles)
+	for(int i=0; i < nodes; i++)
+		total_num_cycles += sp_cycles.size();
+
+printf("The total number of cycles = %d\n", total_num_cycles);
 
 
 	//clear the memory
