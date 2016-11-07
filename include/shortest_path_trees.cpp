@@ -66,3 +66,21 @@ void shortest_path_tree::calculate_sp_tree()
 	in_tree.clear();
 
 }
+
+cycle* shortest_path_tree::get_cycle_info(int edge_offset)
+{
+	int row = parent_graph.rows->at(edge_offset);
+	int col = parent_graph.columns->at(edge_offset);
+
+	if(minimum_node_in_path[row] == root_node && minimum_node_in_path[col] == root_node
+		&& S_value[row] != S_value[col])
+	{
+		cycle* c = new cycle(root_node, edge_offset, distance[row] + distance[col] + parent_graph.weights->at(edge_offset));
+		c->S_value_row = S_value_edge[row];
+		c->S_value_col = S_value_edge[col];
+
+		return c;
+	}
+	else
+		return NULL;
+}

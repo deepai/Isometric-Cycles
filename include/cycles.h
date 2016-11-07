@@ -5,17 +5,20 @@
 
 struct cycle
 {
-	shortest_path_tree *tree;
+	int root;
 
 	unsigned edge_offset;
 	unsigned total_weight;
 
+	int S_value_row;
+	int S_value_col;
+
 	cycle(){};
 
-	cycle(shortest_path_tree *curr_tree, unsigned offset, unsigned total_weight)
+	cycle(int root, unsigned offset, unsigned total_weight)
 	{
-		tree = curr_tree;
-		edge_offset = offset;
+		this->root = root;
+		this->edge_offset = offset;
 		this->total_weight = total_weight;
 	}
 };

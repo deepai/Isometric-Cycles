@@ -5,7 +5,9 @@
 #include <vector>
 #include <utility>
 #include <cmath>
+
 #include "CsrGraphMulti.h"
+#include "cycles.h"
 
 //This class is used to store the shortest path trees
 
@@ -59,6 +61,8 @@ public:
 		S_value_edge.clear();
 		minimum_node_in_path.clear();
 	}
+
+	cycle* get_cycle_info(int edge_offset);
 
 };
 
