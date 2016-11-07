@@ -103,27 +103,43 @@ int main(int argc, char **argv)
 	}
 
 	std::vector<shortest_path_tree*> sp_trees(nodes);
-	std::vector<std::vector<cycle> > sp_cycles(nodes);
+	std::vector<std::vector<cycle*> > sp_cycles(nodes);
 
 
 //calculate and construct shortest path trees.
 #pragma omp parallel for 
-	for(int i = 0; i < sp_trees.size(); ++i)
+	for(int i = 0; i < nodes; ++i)
 	{
 		sp_trees[i] = new shortest_path_tree(nodes,i,*graph);
 		sp_trees[i]->calculate_sp_tree();
 	}
 
+#pragma omp parallel for
+	for(int i=0; i < nodes; i++)
+	{
+		for(int j=0; j < non_tree_edges_map.size(); j++)
+		{
+			if(non_tree_edges_map[j] >= 0)
+			{
+				cycle* c = sp_trees[i]->get_cycle_info(j);
+				if(c != NULL)
+				{
+					sp_cycles[i].push_back(c);
+				}
+			}
+		}
+	}
+
 
 	//clear the memory
 #pragma omp parallel for
-	for(int i=0;i<sp_cycles.size();i++)
+	for(int i=0; i < nodes; i++)
 	{
 		sp_cycles[i].clear();
 	}
 
 #pragma omp parallel for
-	for(int i=0;i<sp_trees.size();i++)
+	for(int i=0; i < nodes; i++)
 		if(sp_trees[i] != NULL)
 			delete sp_trees[i];
 
