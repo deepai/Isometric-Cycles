@@ -24,10 +24,7 @@
 #include "CsrTree.h"
 #include "CsrGraphMulti.h"
 #include "bit_vector.h"
-#include "work_per_thread.h"
-#include "cycle_searcher.h"
 #include "stats.h"
-#include "FVS.h"
 #include "shortest_path_trees.h"
 
 HostTimer globalTimer;
@@ -83,8 +80,26 @@ int main(int argc, char **argv)
 	graph->calculateDegreeandRowOffset();
 	Reader.fileClose();
 
-	shortest_path_tree tree(nodes,0,*graph);
-	tree.calculate_sp_tree();
+	int source_vertex = 0;
+
+	
+	csr_tree *initial_spanning_tree = new csr_tree(graph);
+	initial_spanning_tree->populate_tree_edges(true, source_vertex);
+
+
+	std::vector<int> non_tree_edges_map(graph->rows->size());
+	std::fill(non_tree_edges_map.begin(), non_tree_edges_map.end(), -1);
+
+	for (int i = 0; i < initial_spanning_tree->non_tree_edges->size(); i++)
+		non_tree_edges_map[initial_spanning_tree->non_tree_edges->at(i)] = i;
+
+	for (int i = 0; i < graph->rows->size(); i++) {
+		//copy the edges into the reverse edges as well.
+		if (non_tree_edges_map[i] < 0)
+			if (non_tree_edges_map[graph->reverse_edge->at(i)] >= 0)
+				non_tree_edges_map[i] =
+						non_tree_edges_map[graph->reverse_edge->at(i)];
+	}
 
 
 	return 0;

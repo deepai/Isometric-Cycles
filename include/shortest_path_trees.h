@@ -4,6 +4,7 @@
 #include <queue>
 #include <vector>
 #include <utility>
+#include <cmath>
 #include "CsrGraphMulti.h"
 
 //This class is used to store the shortest path trees
@@ -47,6 +48,15 @@ public:
 	}
 
 	void calculate_sp_tree();
+
+	~shortest_path_tree()
+	{
+		parent.clear();
+		edge_offsets.clear();
+		S_value.clear();
+		S_value_edge.clear();
+		minimum_node_in_path.clear();
+	}
 
 };
 

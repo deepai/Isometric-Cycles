@@ -27,22 +27,39 @@ void shortest_path_tree::calculate_sp_tree()
 
 		for (unsigned offset = parent_graph.rowOffsets->at(val.first);
 				offset < parent_graph.rowOffsets->at(val.first + 1); offset++) {
-			unsigned column = parent_graph.columns->at(offset);
-			if (!in_tree[column]) {
+			int dest = parent_graph.columns->at(offset);
+
+		//do the following
+		//1) assign parent
+		//2) assign edge_offsets
+		//3) assign S_values and S_value_edges
+		//4) assign min_node_in_path
+
+			if (!in_tree[dest]) {
 				int edge_weight = parent_graph.weights->at(offset);
 
-				if (distance[column] == -1) {
-					distance[column] = distance[val.first] + edge_weight;
-					pq.push(std::make_pair(column, distance[column]));
-					parent[column] = val.first;
-					edge_offsets[column] = offset;
+				if (distance[dest] == -1) {
+					distance[dest] = distance[val.first] + edge_weight;
+					pq.push(std::make_pair(dest, distance[dest]));
+					parent[dest] = val.first;
+					edge_offsets[dest] = offset;
+
+					S_value[dest] = (val.first == root_node)?root_node:S_value[val.first];
+					S_value_edge[dest] = (val.first == root_node)?offset : S_value_edge[val.first];
+
+					minimum_node_in_path[dest] = std::min(dest,val.first);
 
 				} else if (distance[val.first] + edge_weight
-						< distance[column]) {
-					distance[column] = distance[val.first] + edge_weight;
-					pq.push(std::make_pair(column, distance[column]));
-					parent[column] = val.first;
-					edge_offsets[column] = offset;
+						< distance[dest]) {
+					distance[dest] = distance[val.first] + edge_weight;
+					pq.push(std::make_pair(dest, distance[dest]));
+					parent[dest] = val.first;
+					edge_offsets[dest] = offset;
+
+					S_value[dest] = (val.first == root_node)?root_node:S_value[val.first];
+					S_value_edge[dest] = (val.first == root_node)?offset : S_value_edge[val.first];
+
+					minimum_node_in_path[dest] = std::min(dest,val.first);
 				}
 			}
 		}
