@@ -2,7 +2,6 @@
 
 void shortest_path_tree::calculate_sp_tree()
 {
-	std::vector<int> distance(num_nodes,-1);
 	std::vector<bool> in_tree(num_nodes);
 
 	std::priority_queue<std::pair<int, int>, std::vector<std::pair<int, int>>,
@@ -64,7 +63,6 @@ void shortest_path_tree::calculate_sp_tree()
 		}
 	}
 
-	distance.clear();
 	in_tree.clear();
 
 }

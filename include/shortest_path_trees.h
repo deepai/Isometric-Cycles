@@ -28,10 +28,12 @@ public:
 	std::vector<int> S_value;
 	std::vector<int> S_value_edge;
 	std::vector<unsigned> minimum_node_in_path;
+	std::vector<int> distance;
 
 	shortest_path_tree(int n, int root, csr_multi_graph &parent_graph) : root_node(root), num_nodes(n), parent_graph(parent_graph)
 	{
 		parent.resize(num_nodes);
+		distance.resize(num_nodes, -1);
 		edge_offsets.resize(num_nodes);
 		S_value.resize(num_nodes);
 		S_value_edge.resize(num_nodes);
