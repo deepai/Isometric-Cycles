@@ -5,6 +5,7 @@
 #include <cstdlib>
 #include <iostream>
 #include <assert.h>
+#include <algorithm>
 
 #ifdef __NVCC__
 
@@ -54,6 +55,16 @@ struct debugger {
 		return *this;
 	}
 };
+
+template <class ForwardIterator, class T>
+int binary_search (ForwardIterator first, ForwardIterator last, const T& val)
+{
+	ForwardIterator result = std::lower_bound(first,last,val);
+	if(result!=last && !(val<*result))
+		return -1;
+	else
+		return (int)(result - first);
+}
 
 #define BLOCK_DEFAULT 1024
 #define CEIL(SIZE) ((int)ceil(((double)SIZE)/BLOCK_DEFAULT))
