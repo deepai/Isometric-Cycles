@@ -133,9 +133,13 @@ int main(int argc, char **argv)
 
 size_t total_num_cycles = 0;
 
+//reduce and sort each cycle by its edge_offset_id
 #pragma omp parallel for reduction(+:total_num_cycles)
 	for(int i=0; i < nodes; i++)
+	{
+		std::sort(sp_cycles[i].begin(), sp_cycles[i].end(), compare_cycle());
 		total_num_cycles += sp_cycles.size();
+	}
 
 printf("The total number of cycles = %d\n", total_num_cycles);
 
