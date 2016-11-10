@@ -143,6 +143,25 @@ size_t total_num_cycles = 0;
 
 printf("The total number of cycles = %d\n", total_num_cycles);
 
+std::vector<int> cycle_offset_nodes(nodes);
+
+int prev = 0, curr;
+//exclusive sum.
+for(int i = 0; i < nodes; i++)
+{
+	curr = sp_cycles[i].size();
+	cycle_offset_nodes[i] = prev;
+	prev += curr;
+}
+
+//mark the indices.
+#pragma omp parallel for
+	for(int i=0; i < nodes ;i++)
+	{
+		for(int j=0; j<sp_cycles[i].size(); j++)
+			sp_cycles[i][j]->set_index(cycle_offset_nodes[i] + j);
+	}
+
 	//clear the memory
 #pragma omp parallel for
 	for(int i=0; i < nodes; i++)
