@@ -3,7 +3,7 @@
 int UF::find(int r)
 {
 	if(parent[r] != r)
-		parent[r] = find(r);
+		parent[r] = find(parent[r]);
 	else
 		return r;
 }

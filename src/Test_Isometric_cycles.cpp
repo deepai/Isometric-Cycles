@@ -27,6 +27,8 @@
 #include "stats.h"
 #include "shortest_path_trees.h"
 #include "cycles.h"
+#include "UF.h"
+#include "check_isometry.h"
 
 HostTimer globalTimer;
 
@@ -161,6 +163,10 @@ for(int i = 0; i < nodes; i++)
 		for(int j=0; j<sp_cycles[i].size(); j++)
 			sp_cycles[i][j]->set_index(cycle_offset_nodes[i] + j);
 	}
+
+UF isometric_cycles(total_num_cycles);
+
+find_isometric_cycles(isometric_cycles, sp_cycles,	sp_trees, nodes, *graph);
 
 	//clear the memory
 #pragma omp parallel for

@@ -26,7 +26,11 @@ struct cycle
 
 	static cycle* binary_search(std::vector<cycle*> &data, int start, int end, unsigned edge_offset)
 	{
+		if(data.size() == 0)
+			return NULL;
+
 		int mid;
+
 		while(start <= end)
 		{
 			mid = start + (end - start)/2;
