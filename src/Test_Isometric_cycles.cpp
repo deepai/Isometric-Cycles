@@ -143,7 +143,6 @@ size_t total_num_cycles = 0;
 
 printf("The total number of cycles = %d\n", total_num_cycles);
 
-
 	//clear the memory
 #pragma omp parallel for
 	for(int i=0; i < nodes; i++)

@@ -31,5 +31,15 @@ struct compare_cycle
 	}
 };
 
+template <class ForwardIterator, class T>
+int binary_search (ForwardIterator first, ForwardIterator last, const T& val, compare_cycle comp)
+{
+	ForwardIterator result = std::lower_bound(first,last,val,comp());
+	if(result!=last && !(val<*result))
+		return -1;
+	else
+		return (int)(result - first);
+}
+
 
 #endif
