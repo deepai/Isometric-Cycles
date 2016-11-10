@@ -168,6 +168,10 @@ UF isometric_cycles(total_num_cycles);
 
 find_isometric_cycles(isometric_cycles, sp_cycles,	sp_trees, nodes, *graph);
 
+int final_isometric_cycle = final_count_cycles(isometric_cycles);
+
+printf("The total number of isometric cycles = %d\n", total_num_cycles);
+
 	//clear the memory
 #pragma omp parallel for
 	for(int i=0; i < nodes; i++)

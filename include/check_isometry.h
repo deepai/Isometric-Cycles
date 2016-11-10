@@ -57,4 +57,17 @@ void find_isometric_cycles(UF &isometric_cycles, std::vector<std::vector<cycle*>
 	}
 }
 
+
+int final_count_cycles(UF &isometric_cycles)
+{
+	int count = 0;
+	for(int i = 0; i < isometric_cycles.num_elements; i++)
+	{
+		if(isometric_cycles.parent[i] == i)
+			count++;
+	}
+
+	return count;
+}
+
 #endif
