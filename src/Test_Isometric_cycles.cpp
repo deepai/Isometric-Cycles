@@ -124,7 +124,7 @@ int main(int argc, char **argv)
 		{
 			if(non_tree_edges_map[j] >= 0)
 			{
-				cycle* c = sp_trees[i]->get_cycle_info(j);
+				cycle* c = cycle::get_cycle_info(*sp_trees[i], j);
 				if(c != NULL)
 				{
 					sp_cycles[i].push_back(c);

@@ -1,6 +1,7 @@
 #ifndef _H_CYCLES
 #define _H_CYCLES
 
+#include "CsrGraphMulti.h"
 #include "shortest_path_trees.h"
 
 struct cycle
@@ -22,6 +23,26 @@ struct cycle
 		this->root = root;
 		this->edge_offset = offset;
 		this->total_weight = total_weight;
+	}
+
+	void print_cycle(csr_multi_graph &graph, shortest_path_tree &tree)
+	{
+		int row = graph.rows->at(edge_offset);
+		int col = graph.columns->at(edge_offset);
+
+		printf("cycle: root =  %d, %d - %d, ", root, row, col);
+		while(row != root)
+		{
+			printf("%d - %d, ",tree.parent[row], row);
+			row = tree.parent[row];
+		}
+
+		while(col != root)
+		{
+			printf("%d - %d, ",tree.parent[col], col);
+			row = tree.parent[row];
+		}
+		printf("\n");
 	}
 
 	static cycle* binary_search(std::vector<cycle*> &data, int start, int end, unsigned edge_offset)
@@ -51,6 +72,24 @@ struct cycle
 	inline void set_index(int c_index)
 	{
 		cycle_index = c_index;
+	}
+
+	static cycle* get_cycle_info(shortest_path_tree &tree, int edge_offset)
+	{
+		int row = tree.parent_graph.rows->at(edge_offset);
+		int col = tree.parent_graph.columns->at(edge_offset);
+
+		if(tree.minimum_node_in_path[row] == tree.root_node && tree.minimum_node_in_path[col] == tree.root_node
+			&& tree.S_value[row] != tree.S_value[col])
+		{
+			cycle* c = new cycle(tree.root_node, edge_offset, tree.distance[row] + tree.distance[col] + tree.parent_graph.weights->at(edge_offset));
+			c->S_value_row = tree.S_value_edge[row];
+			c->S_value_col = tree.S_value_edge[col];
+
+			return c;
+		}
+		else
+			return NULL;
 	}
 };
 

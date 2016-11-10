@@ -7,7 +7,6 @@
 #include <cmath>
 
 #include "CsrGraphMulti.h"
-#include "cycles.h"
 
 //This class is used to store the shortest path trees
 
@@ -17,14 +16,13 @@ struct compare_pair {
 	}
 };
 
-class shortest_path_tree
+struct shortest_path_tree
 {
 	const int root_node;
 	const int num_nodes;
 
 	csr_multi_graph &parent_graph;
 
-public:
 	std::vector<int> parent;
 	std::vector<int> edge_offsets;
 	std::vector<int> S_value;
@@ -61,8 +59,6 @@ public:
 		S_value_edge.clear();
 		minimum_node_in_path.clear();
 	}
-
-	cycle* get_cycle_info(int edge_offset);
 
 };
 
