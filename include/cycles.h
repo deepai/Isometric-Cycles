@@ -25,22 +25,23 @@ struct cycle
 		this->total_weight = total_weight;
 	}
 
-	void print_cycle(csr_multi_graph &graph, shortest_path_tree &tree)
+	void print_cycle(int index, csr_multi_graph &graph, shortest_path_tree &tree)
 	{
 		int row = graph.rows->at(edge_offset);
 		int col = graph.columns->at(edge_offset);
 
-		printf("cycle: root =  %d, %d - %d, ", root, row, col);
+		printf("%d) cycle: root =  %d, weight = %u, %d - %d, ",index, root + 1, total_weight, row + 1, col + 1);
+
 		while(row != root)
 		{
-			printf("%d - %d, ",tree.parent[row], row);
+			printf("%d - %d, ",tree.parent[row] + 1, row + 1);
 			row = tree.parent[row];
 		}
 
 		while(col != root)
 		{
-			printf("%d - %d, ",tree.parent[col], col);
-			row = tree.parent[row];
+			printf("%d - %d, ",tree.parent[col] + 1, col + 1);
+			col = tree.parent[col];
 		}
 		printf("\n");
 	}

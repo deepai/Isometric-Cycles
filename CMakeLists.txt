@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.0)
 # Pass options to NVCC
 
 add_compile_options(-O2 -std=c++11 -fopenmp -w)
-add_definitions(-DMULTI_THREAD -DNDEBUG -DVERBOSE)
+add_definitions(-DMULTI_THREAD -DNDEBUG -DVERBOSE -DPRINT)
 
 include_directories(
     include

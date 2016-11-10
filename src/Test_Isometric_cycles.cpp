@@ -104,6 +104,18 @@ int main(int argc, char **argv)
 						non_tree_edges_map[graph->reverse_edge->at(i)];
 	}
 
+#ifdef PRINT
+	for(int i = 0; i < graph->rows->size(); i++) {
+		if(non_tree_edges_map[i] >=0 )
+		{
+			int row = graph->rows->at(i);
+			int col = graph->columns->at(i);
+
+			printf("%d - %d\n", row + 1, col + 1);
+		}
+	}
+#endif
+
 	std::vector<shortest_path_tree*> sp_trees(nodes);
 	std::vector<std::vector<cycle*> > sp_cycles(nodes);
 
@@ -140,7 +152,7 @@ size_t total_num_cycles = 0;
 	for(int i=0; i < nodes; i++)
 	{
 		std::sort(sp_cycles[i].begin(), sp_cycles[i].end(), compare_cycle());
-		total_num_cycles += sp_cycles.size();
+		total_num_cycles += sp_cycles[i].size();
 	}
 
 printf("The total number of cycles = %d\n", total_num_cycles);
@@ -168,9 +180,9 @@ UF isometric_cycles(total_num_cycles);
 
 find_isometric_cycles(isometric_cycles, sp_cycles,	sp_trees, nodes, *graph);
 
-int final_isometric_cycle = final_count_cycles(isometric_cycles);
+int final_isometric_cycle = final_count_cycles(isometric_cycles, sp_cycles,	sp_trees, nodes, *graph);
 
-printf("The total number of isometric cycles = %d\n", total_num_cycles);
+printf("The total number of isometric cycles = %d\n", final_isometric_cycle);
 
 	//clear the memory
 #pragma omp parallel for

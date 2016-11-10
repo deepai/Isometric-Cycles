@@ -58,13 +58,31 @@ void find_isometric_cycles(UF &isometric_cycles, std::vector<std::vector<cycle*>
 }
 
 
-int final_count_cycles(UF &isometric_cycles)
+int final_count_cycles(UF &isometric_cycles, std::vector<std::vector<cycle*> > &sp_cycles,	std::vector<shortest_path_tree*> &sp_trees,
+						 	int num_nodes, csr_multi_graph &graph)
 {
 	int count = 0;
-	for(int i = 0; i < isometric_cycles.num_elements; i++)
+	int counter = 0;
+	for(int x = 0; x < num_nodes; x++)
 	{
-		if(isometric_cycles.parent[i] == i)
-			count++;
+		for(int j = 0; j < sp_cycles[x].size(); j++)
+		{
+			int id = sp_cycles[x][j]->cycle_index;
+
+			#ifdef PRINT
+				sp_cycles[x][j]->print_cycle(++counter, graph, *sp_trees[x]);
+			#endif
+
+			if(isometric_cycles.parent[id] == id)
+			{
+				#ifdef PRINT
+					sp_cycles[x][j]->print_cycle(count, graph, *sp_trees[x]);
+				#endif
+
+				count++;
+			}
+		}
+		//printf("%d\n",count);
 	}
 
 	return count;
