@@ -80,8 +80,13 @@ struct cycle
 		int row = tree.parent_graph.rows->at(edge_offset);
 		int col = tree.parent_graph.columns->at(edge_offset);
 
+		#ifdef PRINT
+			printf("Cycle = %d, %d - %d\n",tree.root_node + 1, row + 1, col + 1);
+			printf("%d %d %d %d\n", tree.minimum_node_in_path[row] + 1, tree.minimum_node_in_path[col] + 1, tree.S_value[row] + 1, tree.S_value[col] + 1 );
+		#endif
+
 		if(tree.minimum_node_in_path[row] == tree.root_node && tree.minimum_node_in_path[col] == tree.root_node
-			&& tree.S_value[row] != tree.S_value[col])
+			&& tree.S_value[row] != tree.S_value[col] && tree.S_value[row] != -1 && tree.S_value[col] != -1)
 		{
 			cycle* c = new cycle(tree.root_node, edge_offset, tree.distance[row] + tree.distance[col] + tree.parent_graph.weights->at(edge_offset));
 			c->S_value_row = tree.S_value_edge[row];

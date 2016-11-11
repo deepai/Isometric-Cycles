@@ -131,7 +131,9 @@ int main(int argc, char **argv)
 	}
 
 //check for every non-tree edge, if a valid cycle is formed. if the cycle is valid, add it.
+#ifndef PRINT
 #pragma omp parallel for
+#endif
 	for(int i=0; i < nodes; i++)
 	{
 		for(int j=0; j < non_tree_edges_map.size(); j++)
