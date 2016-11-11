@@ -14,6 +14,9 @@ void shortest_path_tree::calculate_sp_tree()
 	distance[root_node] = 0;
 	parent[root_node] = -1;
 	edge_offsets[root_node] = -1;
+	minimum_node_in_path[root_node] = root_node;
+	S_value[root_node] = -1;
+	S_value_edge[root_node] = -1;
 
 	int src = root_node;
 
@@ -27,6 +30,22 @@ void shortest_path_tree::calculate_sp_tree()
 			continue;
 
 		in_tree[val.first] = true;
+
+		if(val.first != root_node)
+		{
+			if(parent[val.first] == root_node)
+			{
+				S_value[val.first] = val.first;
+				S_value_edge[val.first] = edge_offsets[val.first];
+			}
+			else
+			{
+				S_value[val.first] = S_value[parent[val.first]];
+				S_value_edge[val.first] = S_value_edge[parent[val.first]];
+			}
+
+			minimum_node_in_path[val.first] = std::min(val.first, minimum_node_in_path[parent[val.first]]);
+		}
 
 		#ifdef PRINT
 			printf("%d - %d, ", parent[val.first] + 1, val.first + 1);
@@ -51,21 +70,11 @@ void shortest_path_tree::calculate_sp_tree()
 					parent[dest] = val.first;
 					edge_offsets[dest] = offset;
 
-					S_value[dest] = (val.first == root_node)?root_node:S_value[val.first];
-					S_value_edge[dest] = (val.first == root_node)?offset : S_value_edge[val.first];
-
-					minimum_node_in_path[dest] = std::min(dest,val.first);
-
 				} else if (distance[val.first] + edge_weight < distance[dest]) {
 					distance[dest] = distance[val.first] + edge_weight;
 					pq.push(std::make_pair(dest, distance[dest]));
 					parent[dest] = val.first;
 					edge_offsets[dest] = offset;
-
-					S_value[dest] = (val.first == root_node)?root_node:S_value[val.first];
-					S_value_edge[dest] = (val.first == root_node)?offset : S_value_edge[val.first];
-
-					minimum_node_in_path[dest] = std::min(dest,val.first);
 				}
 			}
 		}

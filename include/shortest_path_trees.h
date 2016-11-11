@@ -27,7 +27,7 @@ struct shortest_path_tree
 	std::vector<int> edge_offsets;
 	std::vector<int> S_value;
 	std::vector<int> S_value_edge;
-	std::vector<unsigned> minimum_node_in_path;
+	std::vector<int> minimum_node_in_path;
 	std::vector<int> distance;
 
 	shortest_path_tree(int n, int root, csr_multi_graph &parent_graph) : root_node(root), num_nodes(n), parent_graph(parent_graph)
@@ -35,8 +35,8 @@ struct shortest_path_tree
 		parent.resize(num_nodes);
 		distance.resize(num_nodes, -1);
 		edge_offsets.resize(num_nodes);
-		S_value.resize(num_nodes);
-		S_value_edge.resize(num_nodes);
+		S_value.resize(num_nodes, -1);
+		S_value_edge.resize(num_nodes, -1);
 		minimum_node_in_path.resize(num_nodes);
 
 		S_value[root] = -1;
