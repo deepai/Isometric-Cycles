@@ -111,7 +111,7 @@ int main(int argc, char **argv)
 			int row = graph->rows->at(i);
 			int col = graph->columns->at(i);
 
-			printf("%d - %d\n", row + 1, col + 1);
+			printf("Non-Tree Edge: %d - %d\n", row + 1, col + 1);
 		}
 	}
 #endif
@@ -121,7 +121,9 @@ int main(int argc, char **argv)
 
 
 //calculate and construct shortest path trees.
+#ifndef PRINT
 #pragma omp parallel for 
+#endif
 	for(int i = 0; i < nodes; ++i)
 	{
 		sp_trees[i] = new shortest_path_tree(nodes,i,*graph);

@@ -2,6 +2,10 @@
 
 void shortest_path_tree::calculate_sp_tree()
 {
+#ifdef PRINT
+	printf("SP root = %d, ", root_node + 1);
+#endif	
+
 	std::vector<bool> in_tree(num_nodes);
 
 	std::priority_queue<std::pair<int, int>, std::vector<std::pair<int, int>>,
@@ -23,6 +27,10 @@ void shortest_path_tree::calculate_sp_tree()
 			continue;
 
 		in_tree[val.first] = true;
+
+		#ifdef PRINT
+			printf("%d - %d, ", parent[val.first] + 1, val.first + 1);
+		#endif	
 
 		for (unsigned offset = parent_graph.rowOffsets->at(val.first);
 				offset < parent_graph.rowOffsets->at(val.first + 1); offset++) {
@@ -62,6 +70,10 @@ void shortest_path_tree::calculate_sp_tree()
 			}
 		}
 	}
+
+#ifdef PRINT
+	printf("\n");
+#endif
 
 	in_tree.clear();
 

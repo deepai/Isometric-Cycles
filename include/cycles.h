@@ -87,6 +87,10 @@ struct cycle
 			c->S_value_row = tree.S_value_edge[row];
 			c->S_value_col = tree.S_value_edge[col];
 
+			#ifdef PRINT
+				printf("Cycle Satisfying cases = %d, %d - %d\n",tree.root_node + 1, row + 1, col + 1);
+			#endif
+
 			return c;
 		}
 		else
