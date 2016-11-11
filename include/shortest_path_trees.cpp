@@ -87,3 +87,8 @@ void shortest_path_tree::calculate_sp_tree()
 	in_tree.clear();
 
 }
+
+bool shortest_path_tree::is_non_tree_edge(int row, int col)
+{
+	return ((parent[col] != row) && (parent[row] != col));
+}

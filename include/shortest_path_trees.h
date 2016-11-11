@@ -60,6 +60,8 @@ struct shortest_path_tree
 		minimum_node_in_path.clear();
 	}
 
+	bool is_non_tree_edge(int row, int col);
+
 };
 
 #endif

@@ -138,7 +138,10 @@ int main(int argc, char **argv)
 	{
 		for(int j=0; j < non_tree_edges_map.size(); j++)
 		{
-			if(non_tree_edges_map[j] >= 0)
+			int row = graph->rows->at(j); //get the row
+			int col = graph->columns->at(j); //get the col
+
+			if(sp_trees[i]->is_non_tree_edge(row,col))
 			{
 				cycle* c = cycle::get_cycle_info(*sp_trees[i], j);
 				if(c != NULL)
