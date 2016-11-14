@@ -37,7 +37,7 @@ void find_isometric_cycles(UF &isometric_cycles, std::vector<std::vector<cycle*>
 				int x_dash = sp_trees[x]->S_value[u];// x' = Sx(u)
 				if(x == sp_trees[x_dash]->S_value[v]) //if x == Sx'(v) //case 2
 				{
-					cycle* c = cycle::binary_search(sp_cycles[x_dash], 0, sp_cycles[x_dash].size(), curr_cycle.edge_offset);
+					cycle* c = cycle::binary_search(sp_cycles[x_dash], 0, sp_cycles[x_dash].size() - 1, curr_cycle.edge_offset);
 					if(c != NULL)
 					{
 						isometric_cycles.merge(curr_cycle.cycle_index, c->cycle_index);
