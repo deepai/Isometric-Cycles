@@ -104,7 +104,7 @@ int main(int argc, char **argv)
 						non_tree_edges_map[graph->reverse_edge->at(i)];
 	}
 
-#ifdef PRINT
+#ifdef PRINT_CYCLES
 	for(int i = 0; i < graph->rows->size(); i++) {
 		if(non_tree_edges_map[i] >=0 )
 		{

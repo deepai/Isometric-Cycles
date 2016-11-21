@@ -69,13 +69,13 @@ int final_count_cycles(UF &isometric_cycles, std::vector<std::vector<cycle*> > &
 		{
 			int id = sp_cycles[x][j]->cycle_index;
 
-			#ifdef PRINT
-				sp_cycles[x][j]->print_cycle(++counter, graph, *sp_trees[x]);
+			#ifdef PRINT_CYCLES
+				//sp_cycles[x][j]->print_cycle(++counter, graph, *sp_trees[x]);
 			#endif
 
 			if(isometric_cycles.parent[id] == id)
 			{
-				#ifdef PRINT
+				#ifdef PRINT_CYCLES
 					sp_cycles[x][j]->print_cycle(count, graph, *sp_trees[x]);
 				#endif
 
