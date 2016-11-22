@@ -19,11 +19,27 @@ add_executable(
 	$<TARGET_OBJECTS:hostlib>
 )
 
+add_executable(
+	Planar_Verify_Generate
+	src/Creation_graph.cpp
+	$<TARGET_OBJECTS:hostlib>
+)
+
 target_link_libraries(
     Test_Isometric_cycles
     -lgomp
     )
+
+target_link_libraries(
+    Planar_Verify_Generate
+    -lgomp
+    )
 set_target_properties( Test_Isometric_cycles
+    PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
+)
+
+set_target_properties( Planar_Verify_Generate
     PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
 )
