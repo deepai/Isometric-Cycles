@@ -119,19 +119,19 @@ int main(int argc, char **argv)
 	std::vector<shortest_path_tree*> sp_trees(nodes);
 	std::vector<std::vector<cycle*> > sp_cycles(nodes);
 
-
+int count_case_all_equal = 0;
 //calculate and construct shortest path trees.
-#ifndef PRINT
-#pragma omp parallel for 
+#ifndef PRINT_CYCLES
+#pragma omp parallel for reduction(+:count_case_all_equal)
 #endif
 	for(int i = 0; i < nodes; ++i)
 	{
 		sp_trees[i] = new shortest_path_tree(nodes,i,*graph);
-		sp_trees[i]->calculate_sp_tree();
+		count_case_all_equal += sp_trees[i]->calculate_sp_tree();
 	}
 
 //check for every non-tree edge, if a valid cycle is formed. if the cycle is valid, add it.
-#ifndef PRINT
+#ifndef PRINT_CYCLES
 #pragma omp parallel for
 #endif
 	for(int i=0; i < nodes; i++)
@@ -190,6 +190,7 @@ find_isometric_cycles(isometric_cycles, sp_cycles,	sp_trees, nodes, *graph);
 int final_isometric_cycle = final_count_cycles(isometric_cycles, sp_cycles,	sp_trees, nodes, *graph);
 
 printf("The total number of isometric cycles = %d\n", final_isometric_cycle);
+printf("Total Number of cases for equal paths = %d\n", count_case_all_equal);
 
 	//clear the memory
 #pragma omp parallel for

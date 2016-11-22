@@ -11,6 +11,7 @@
 //This class is used to store the shortest path trees
 
 struct compare_pair {
+
 	bool operator()(std::pair<int, int> &a, std::pair<int, int> &b) {
 		return (a.second > b.second);
 	}
@@ -49,7 +50,7 @@ struct shortest_path_tree
 		return root_node;
 	}
 
-	void calculate_sp_tree();
+	int calculate_sp_tree();
 
 	~shortest_path_tree()
 	{
@@ -59,6 +60,8 @@ struct shortest_path_tree
 		S_value_edge.clear();
 		minimum_node_in_path.clear();
 	}
+
+	void calculate_lca(int existing_parent, int new_parent, int &min_existing, int &min_new);
 
 	bool is_non_tree_edge(int row, int col);
 

@@ -1,17 +1,19 @@
 #include "shortest_path_trees.h"
 
-void shortest_path_tree::calculate_sp_tree()
+int shortest_path_tree::calculate_sp_tree()
 {
 #ifdef PRINT
 	printf("SP root = %d, ", root_node + 1);
 #endif	
 
 	std::vector<bool> in_tree(num_nodes);
+	std::vector<int> path_length(num_nodes);
 
 	std::priority_queue<std::pair<int, int>, std::vector<std::pair<int, int>>,
 			compare_pair> pq;
 
 	distance[root_node] = 0;
+	path_length[root_node] = 0;
 	parent[root_node] = -1;
 	edge_offsets[root_node] = -1;
 	minimum_node_in_path[root_node] = root_node;
@@ -21,6 +23,8 @@ void shortest_path_tree::calculate_sp_tree()
 	int src = root_node;
 
 	pq.push(std::make_pair(src, 0));
+
+	int count_case_allequal = 0;
 
 	while (!pq.empty()) {
 		std::pair<int, int> val = pq.top();
@@ -69,12 +73,39 @@ void shortest_path_tree::calculate_sp_tree()
 					pq.push(std::make_pair(dest, distance[dest]));
 					parent[dest] = val.first;
 					edge_offsets[dest] = offset;
+					path_length[dest] = path_length[val.first] + 1;
 
 				} else if (distance[val.first] + edge_weight < distance[dest]) {
 					distance[dest] = distance[val.first] + edge_weight;
 					pq.push(std::make_pair(dest, distance[dest]));
 					parent[dest] = val.first;
 					edge_offsets[dest] = offset;
+					path_length[dest] = path_length[val.first] + 1;
+				}
+				else if (distance[val.first] + edge_weight == distance[dest])
+				{
+					if(path_length[val.first] + 1 < path_length[dest])
+					{
+						parent[dest] = val.first;
+						edge_offsets[dest] = offset;
+						path_length[dest] = path_length[val.first] + 1;
+					}
+					else if(path_length[val.first] + 1 == path_length[dest])
+					{
+						int min_existing = parent[dest];
+						int min_new = val.first;
+
+						calculate_lca(parent[dest], val.first, min_existing, min_new);
+						
+						if(min_new < min_existing)
+						{
+							parent[dest] = val.first;
+							edge_offsets[dest] = offset;
+							path_length[dest] = path_length[val.first] + 1;
+						}
+
+						count_case_allequal += 1;
+					}
 				}
 			}
 		}
@@ -85,10 +116,25 @@ void shortest_path_tree::calculate_sp_tree()
 #endif
 
 	in_tree.clear();
+	path_length.clear();
+
+	return count_case_allequal;
 
 }
 
 bool shortest_path_tree::is_non_tree_edge(int row, int col)
 {
 	return ((parent[col] != row) && (parent[row] != col));
+}
+
+void shortest_path_tree::calculate_lca(int existing_parent, int new_parent, int &min_existing, int &min_new)
+{
+	while(existing_parent != new_parent)
+	{
+		min_existing = std::min(min_existing, existing_parent);
+		min_new = std::min(new_parent, min_new);
+
+		existing_parent = parent[existing_parent];
+		new_parent = parent[new_parent];
+	}
 }
