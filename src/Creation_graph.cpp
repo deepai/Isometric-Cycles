@@ -8,8 +8,13 @@
 #include <boost/ref.hpp>
 #include <vector>
 
+#include <cstdlib>
+#include <ctime>
+
 #include <boost/graph/planar_face_traversal.hpp>
 #include <boost/graph/boyer_myrvold_planar_test.hpp>
+#include <boost/graph/make_connected.hpp>
+#include <boost/graph/make_biconnected_planar.hpp>
 
 #include "FileReader.h"
 #include "FileWriter.h"
@@ -18,7 +23,7 @@ using namespace std;
 
 using namespace boost;
 
-std::string input_file;
+std::string input_file, output_file;
 
 typedef adjacency_list
 < vecS,
@@ -89,62 +94,113 @@ struct edge_output_visitor : public output_visitor
 
 int main(int argc, char *argv[])
 {
+    srand(time(NULL));
+
 	if(argc < 2)
 	{
 		printf("Ist argument is the name of the input file.\n");
 		return 1;
 	}
+    if(argc == 3)
+    {
+        output_file = string(argv[2]);
+    }
+
 	input_file = string(argv[1]);
 
-	int num_nodes, num_edges;
+	int num_nodes_count, num_edges_count;
 	int src, dest, weight;
 	FileReader file_in(input_file.c_str());
 
-	file_in.get_nodes_edges(num_nodes, num_edges);
+	file_in.get_nodes_edges(num_nodes_count, num_edges_count);
 
-	Graph G(num_nodes);
-        Edge edge; 
+	Graph G(num_nodes_count);
+    Edge edge; 
 
-        Edge_Weight_Array edge_weights = get(edge_weight, G);
+    Edge_Weight_Array edge_weights = get(edge_weight, G);
 
-	for(int i=0; i < num_edges; i++){
+	for(int i=0; i < num_edges_count; i++){
 		file_in.read_edge(src, dest, weight);
 		edge = add_edge(src, dest, G).first;
-                edge_weights[edge] = weight;
+        edge_weights[edge] = weight;
 	}
-
 
 	file_in.fileClose();
 
+    make_connected(G);
+
 	Edge_Index_Array e_index = get(edge_index, G);
-        graph_traits<Graph>::edges_size_type edge_count = 0;
-        Edge_Iterator ei, ei_end;
+    graph_traits<Graph>::edges_size_type edge_count = 0;
+    Edge_Iterator ei, ei_end;
+    for(boost::tie(ei, ei_end) = edges(G); ei != ei_end; ++ei)
+            put(e_index, *ei, edge_count++);
+
+    embedding_storage_t embedding_storage(num_vertices(G));
+    embedding_t embedding(embedding_storage.begin(), get(vertex_index, G));
+
+    bool is_planar_graph = false;
+    is_planar_graph = boyer_myrvold_planarity_test(boyer_myrvold_params::graph = G,
+                                                    boyer_myrvold_params::embedding = embedding
+                                   			);
+
+    // for (tie(ei, ei_end) = edges(G); ei != ei_end; ++ei)
+    //         cout << edge_weights[*ei] << endl;
+
+    int prev_edges = num_edges(G);
+
+    cout << "Number of original Edges: " << prev_edges << endl;
+
+
+    if(is_planar_graph)
+    {
+    	vertex_output_visitor v_vis;
+    	edge_output_visitor e_vis;
+
+        make_biconnected_planar(G, embedding);
+
+        edge_weights = get(edge_weight, G);
         for(boost::tie(ei, ei_end) = edges(G); ei != ei_end; ++ei)
-                put(e_index, *ei, edge_count++);
+            put(e_index, *ei, edge_count++);
 
-        embedding_storage_t embedding_storage(num_vertices(G));
-        embedding_t embedding(embedding_storage.begin(), get(vertex_index, G));
 
-        bool is_planar_graph = false;
         is_planar_graph = boyer_myrvold_planarity_test(boyer_myrvold_params::graph = G,
-                                                        boyer_myrvold_params::embedding = embedding
-                                       			);
-
-        // for (tie(ei, ei_end) = edges(G); ei != ei_end; ++ei)
-        //         cout << edge_weights[*ei] << endl;
-
+                                                    boyer_myrvold_params::embedding = embedding
+                                            );
 
         if(is_planar_graph)
         {
-        	vertex_output_visitor v_vis;
-        	edge_output_visitor e_vis;
+            int current_edges = num_edges(G);
+            cout << "Number of new Edges: " << current_edges << endl;
 
-        	planar_face_traversal(G, embedding, v_vis);
+            if(argc == 3)
+            {
+                FileWriter fout(output_file.c_str(), num_vertices(G), current_edges);
 
-        	cout << "Number of faces = " << number_faces << endl;
+                int src, dest, weight;
+
+                for (tie(ei, ei_end) = edges(G); ei != ei_end; ++ei)
+                {
+                    src = source(*ei, G);
+                    dest = target(*ei, G);
+                    weight = edge_weights[*ei];
+                    if(weight == 0)
+                    {
+                        weight = rand()%500 + 1;
+                        edge_weights[*ei] = weight;
+                    }
+
+                    fout.write_edge(src, dest, weight);
+                }
+               // cout << edge_weights[*ei] << endl;
+
+                fout.fileClose();
+            }
+            //planar_face_traversal(G, embedding, v_vis);
         }
+    	//cout << "Number of faces = " << number_faces << endl;
+    }
 
-        cout << "Planarity test for graph yields " << ((is_planar_graph)?"true":"false") << endl;
-        
-        return 0;
+    cout << "Planarity test for graph yields " << ((is_planar_graph)?"true":"false") << endl;
+    
+    return 0;
 }
