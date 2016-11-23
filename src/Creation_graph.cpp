@@ -158,6 +158,8 @@ int main(int argc, char *argv[])
 
         make_biconnected_planar(G, embedding);
 
+        edge_count = 0;
+
         edge_weights = get(edge_weight, G);
         for(boost::tie(ei, ei_end) = edges(G); ei != ei_end; ++ei)
             put(e_index, *ei, edge_count++);
@@ -171,6 +173,11 @@ int main(int argc, char *argv[])
         {
             int current_edges = num_edges(G);
             cout << "Number of new Edges: " << current_edges << endl;
+
+            edge_count = 0;
+
+            for(boost::tie(ei, ei_end) = edges(G); ei != ei_end; ++ei)
+                put(e_index, *ei, edge_count++);
 
             if(argc == 3)
             {
@@ -195,9 +202,12 @@ int main(int argc, char *argv[])
 
                 fout.fileClose();
             }
-            //planar_face_traversal(G, embedding, v_vis);
+
+            vertex_output_visitor v_vis;
+            planar_face_traversal(G, embedding, v_vis);
+            cout << "Number of faces = " << number_faces << endl;
+
         }
-    	//cout << "Number of faces = " << number_faces << endl;
     }
 
     cout << "Planarity test for graph yields " << ((is_planar_graph)?"true":"false") << endl;
