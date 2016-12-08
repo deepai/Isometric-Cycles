@@ -133,7 +133,9 @@ int main(int argc, char *argv[])
     graph_traits<Graph>::edges_size_type edge_count = 0;
     Edge_Iterator ei, ei_end;
     for(boost::tie(ei, ei_end) = edges(G); ei != ei_end; ++ei)
-            put(e_index, *ei, edge_count++);
+    {
+        e_index[*ei] = edge_count++;
+    }
 
     embedding_storage_t embedding_storage(num_vertices(G));
     embedding_t embedding(embedding_storage.begin(), get(vertex_index, G));
@@ -162,8 +164,9 @@ int main(int argc, char *argv[])
 
         edge_weights = get(edge_weight, G);
         for(boost::tie(ei, ei_end) = edges(G); ei != ei_end; ++ei)
-            put(e_index, *ei, edge_count++);
-
+        {
+                e_index[*ei] = edge_count++;
+        }
 
         is_planar_graph = boyer_myrvold_planarity_test(boyer_myrvold_params::graph = G,
                                                     boyer_myrvold_params::embedding = embedding
@@ -177,7 +180,10 @@ int main(int argc, char *argv[])
             edge_count = 0;
 
             for(boost::tie(ei, ei_end) = edges(G); ei != ei_end; ++ei)
-                put(e_index, *ei, edge_count++);
+            {
+                    e_index[*ei] = edge_count++;
+            }
+
 
             if(argc == 3)
             {
