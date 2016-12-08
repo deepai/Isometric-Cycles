@@ -20,12 +20,13 @@
 #include "FileWriter.h"
 
 #include <create_dual_graph.hpp>
+#include <Graph_To_File.hpp>
 
 using namespace std;
 
 using namespace boost;
 
-std::string input_file, output_file;
+std::string input_file, output_file, dual_output_file;
 
 typedef adjacency_list
 < vecS,
@@ -107,6 +108,13 @@ int main(int argc, char *argv[])
     {
         output_file = string(argv[2]);
     }
+
+    if(argc == 4)
+    {
+        output_file = string(argv[2]);
+        dual_output_file = string(argv[3]);
+    }
+
 
 	input_file = string(argv[1]);
 
@@ -197,26 +205,12 @@ int main(int argc, char *argv[])
 
             if(argc == 3)
             {
-                FileWriter fout(output_file.c_str(), num_vertices(G), current_edges);
-
-                int src, dest, weight;
-
-                for (tie(ei, ei_end) = edges(G); ei != ei_end; ++ei)
-                {
-                    src = source(*ei, G);
-                    dest = target(*ei, G);
-                    weight = edge_weights[*ei];
-                    if(weight == 0)
-                    {
-                        weight = rand()%500 + 1;
-                        edge_weights[*ei] = weight;
-                    }
-
-                    fout.write_edge(src, dest, weight);
-                }
-               // cout << edge_weights[*ei] << endl;
-
-                fout.fileClose();
+                write_graph_to_file<Graph,Edge_Iterator,Edge_Weight_Array>(output_file.c_str(), G);
+            }
+            else if(argc == 4)
+            {
+                write_graph_to_file<Graph,Edge_Iterator,Edge_Weight_Array>(output_file.c_str(), G);
+                write_graph_to_file<Graph,Edge_Iterator,Edge_Weight_Array>(dual_output_file.c_str(), dual_graph);
             }
 
             vertex_output_visitor v_vis;

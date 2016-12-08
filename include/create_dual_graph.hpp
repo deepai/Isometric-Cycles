@@ -26,6 +26,9 @@ namespace boost
 
     typedef typename property_map<InputGraph, edge_index_t>::type Input_Edge_Index_Array;
     typedef typename property_map<OutputGraph, edge_index_t>::type Output_Edge_Index_Array;
+
+    typedef typename property_map<InputGraph, edge_weight_t>::type Input_Edge_Weight_Array;
+    typedef typename property_map<OutputGraph, edge_weight_t>::type Output_Edge_Weight_Array;
  
     dual_graph_visitor(InputGraph& arg_g,
                        OutputGraph& arg_dual_g,
@@ -40,6 +43,9 @@ namespace boost
       {
         e_in_index = get(edge_index, g);
         e_out_index = get(edge_index, dual_g);
+
+        input_edge_weights = get(edge_weight, g);
+        output_edge_weights = get(edge_weight, dual_g);
       }
  
     void begin_face()
@@ -59,6 +65,7 @@ namespace boost
       {
         Edge temp = add_edge(existing_face, current_face, dual_g).first;
         e_out_index[temp] = e_in_index[e]; //map the edge_index of the dual graph to that of the original graph.
+        output_edge_weights[temp] = input_edge_weights[e];
       }
     }
  
@@ -71,6 +78,9 @@ namespace boost
 
     Input_Edge_Index_Array e_in_index;
     Output_Edge_Index_Array e_out_index;
+
+    Input_Edge_Weight_Array input_edge_weights;
+    Output_Edge_Weight_Array output_edge_weights;
   };
  
   template <typename InputGraph,
