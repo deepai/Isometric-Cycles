@@ -19,6 +19,8 @@
 #include "FileReader.h"
 #include "FileWriter.h"
 
+#include <create_dual_graph.hpp>
+
 using namespace std;
 
 using namespace boost;
@@ -177,12 +179,20 @@ int main(int argc, char *argv[])
             int current_edges = num_edges(G);
             cout << "Number of new Edges: " << current_edges << endl;
 
+            //This index is used to map the index value to the individual edge descriptors
+            Edge *index_to_edges_map = new Edge[current_edges];
+
             edge_count = 0;
 
             for(boost::tie(ei, ei_end) = edges(G); ei != ei_end; ++ei)
             {
+                    index_to_edges_map[edge_count] = *ei;
                     e_index[*ei] = edge_count++;
             }
+
+
+            Graph dual_graph;
+            create_dual_graph(G, dual_graph, embedding);
 
 
             if(argc == 3)
@@ -212,6 +222,10 @@ int main(int argc, char *argv[])
             vertex_output_visitor v_vis;
             planar_face_traversal(G, embedding, v_vis);
             cout << "Number of faces = " << number_faces << endl;
+
+            cout << "Number of vertices in dual graph = " << num_vertices(dual_graph) << endl;
+
+            delete[] index_to_edges_map;
 
         }
     }
