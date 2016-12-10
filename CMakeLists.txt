@@ -9,7 +9,7 @@ include_directories(
     include
     )
 
-FILE(GLOB HOST_SOURCES  "include/*.cpp" "include/*.h")
+FILE(GLOB HOST_SOURCES  "include/*.cpp" "include/*.h" "include/*.hpp")
 
 add_library(hostlib OBJECT ${HOST_SOURCES})
 
