@@ -2,17 +2,17 @@
 #define __GRAPH_TO_FILE_HPP__
 
 #include <vector>
+#include <cstdio>
  
 #include <boost/config.hpp>
 
 using namespace std;
 using namespace boost;
 
-
 #include "FileWriter.h"
 
-template <typename Graph,typename Edge_Iterator,typename Edge_Weight_Array>
-void write_graph_to_file(const char *file_name, Graph &G)
+template <typename Graph,typename Edge_Iterator,typename Edge_Weight_Array, typename Edge_Index_Array>
+void write_graph_to_file(const char *file_name, Graph &G, bool write_edge_mapping = false)
 {
 	FileWriter fout(file_name, num_vertices(G), num_edges(G));
 
@@ -33,6 +33,17 @@ void write_graph_to_file(const char *file_name, Graph &G)
         }
 
         fout.write_edge(src, dest, weight);
+    }
+
+    FILE *foutput = fout.get_file();
+
+    if(write_edge_mapping == true)
+    {
+        Edge_Index_Array edge_array = get(edge_index, G);
+        for (tie(ei, ei_end) = edges(G); ei != ei_end; ++ei)
+        {
+            fprintf(foutput, "%d\n",edge_array[*ei]);
+        }
     }
    // cout << edge_weights[*ei] << endl;
 

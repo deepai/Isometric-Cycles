@@ -205,12 +205,12 @@ int main(int argc, char *argv[])
 
             if(argc == 3)
             {
-                write_graph_to_file<Graph,Edge_Iterator,Edge_Weight_Array>(output_file.c_str(), G);
+                write_graph_to_file<Graph,Edge_Iterator,Edge_Weight_Array,Edge_Index_Array>(output_file.c_str(), G);
             }
             else if(argc == 4)
             {
-                write_graph_to_file<Graph,Edge_Iterator,Edge_Weight_Array>(output_file.c_str(), G);
-                write_graph_to_file<Graph,Edge_Iterator,Edge_Weight_Array>(dual_output_file.c_str(), dual_graph);
+                write_graph_to_file<Graph,Edge_Iterator,Edge_Weight_Array,Edge_Index_Array>(output_file.c_str(), G);
+                write_graph_to_file<Graph,Edge_Iterator,Edge_Weight_Array,Edge_Index_Array>(dual_output_file.c_str(), dual_graph, true);
             }
 
             vertex_output_visitor v_vis;
