@@ -25,6 +25,12 @@ add_executable(
 	$<TARGET_OBJECTS:hostlib>
 )
 
+add_executable(
+    MCB
+    src/MCB.cpp
+    $<TARGET_OBJECTS:hostlib>
+)
+
 target_link_libraries(
     Test_Isometric_cycles
     -lgomp
@@ -34,12 +40,23 @@ target_link_libraries(
     Planar_Verify_Generate
     -lgomp
     )
+
+target_link_libraries(
+    MCB
+    -lgomp
+    )
+
 set_target_properties( Test_Isometric_cycles
     PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
 )
 
 set_target_properties( Planar_Verify_Generate
+    PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
+)
+
+set_target_properties( MCB
     PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
 )
