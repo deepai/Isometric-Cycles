@@ -8,10 +8,10 @@
 using namespace std;
 using namespace boost;
 
-template<typename Vertex>
+template<class Vertex>
 struct SP_Info
 {
-	Vertex &root;
+	Vertex root;
 	vector<Vertex> Parent;
 	vector<int> D;
 	vector<int> S;
@@ -36,25 +36,29 @@ struct SP_Info
 		is_tree_edge.clear();
 	}
 };
-template<typename Vertex>
+template<class Vertex>
 struct SP_VISITOR : public default_dijkstra_visitor
 {
 	SP_Info<Vertex> &info;
 	SP_VISITOR(SP_Info<Vertex> &info) : info(info){}
 };
 
-template <typename Graph,typename Vertex>
+template <class Graph,class Vertex>
 struct boost_sp_tree
 {
 	Graph &input_graph;
 	SP_Info<Vertex> info;
 
-	boost_sp_tree(Vertex root, Graph &G) : input_graph(G) , info(root, num_vertices(G), num_edges(G))
+	SP_VISITOR<Vertex> vis;
+
+	boost_sp_tree(Vertex root, Graph &G) : input_graph(G) , info(root, num_vertices(G), num_edges(G)) , vis(info)
 	{
 
 	}
 
 	void boost_calculate_sp();
 };
+
+#include "boost_sp_trees.hpp"
 
 #endif
