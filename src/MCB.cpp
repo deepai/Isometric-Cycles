@@ -15,6 +15,8 @@
 #include "FileReader.h"
 #include "FileWriter.h"
 
+#include "boost_sp_trees.h"
+
 using namespace std;
 using namespace boost;
 
@@ -32,6 +34,7 @@ typedef adjacency_list
 Graph;
 
 typedef graph_traits<Graph>::edge_descriptor Edge;
+typedef graph_traits<Graph>::vertex_descriptor Vertex;
 typedef property_map<Graph, edge_weight_t>::type Edge_Weight_Array;
 typedef property_map<Graph, edge_index_t>::type Edge_Index_Array;
 typedef graph_traits<Graph>::edge_iterator Edge_Iterator;
@@ -111,6 +114,8 @@ int main(int argc, char *argv[])
     }
 
 	file_dual_in.fileClose();
+
+	boost_sp_tree<Graph,Vertex> (0, G);
 
 	return 0;
 }
