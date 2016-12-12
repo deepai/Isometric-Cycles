@@ -76,14 +76,14 @@ int main(int argc, char *argv[])
 
 	file_dual_in.get_nodes_edges(num_nodes_dual_G, num_edges_dual_G);
 
-	Edge *edges_G = new Edge[num_edges_G]; //stores edges of G
-	Edge *edges_dual_G = new Edge[num_edges_G]; //stores edges of dual_G
+	Edge_Iterator *edges_G = new Edge_Iterator[num_edges_G]; //stores edges of G
+	Edge_Iterator *edges_dual_G = new Edge_Iterator[num_edges_G]; //stores edges of dual_G
 
 	int edge_id = 0, curr_edge = 0;
 
 	for(boost::tie(ei, ei_end) = edges(G); ei != ei_end; ++ei)
     {
-    	edges_G[edge_id++] = *ei; //stores edges of G in the array
+    	edges_G[edge_id++] = ei; //stores edges of G in the array
     }
 
 	Graph dual_G(num_nodes_dual_G);
@@ -106,16 +106,16 @@ int main(int argc, char *argv[])
 
 	for(boost::tie(ei, ei_end) = edges(G); ei != ei_end; ++ei)
     {
-    	edges_dual_G[curr_edge] = *ei;  //First store dual_G edges
+    	edges_dual_G[curr_edge] = ei;  //First store dual_G edges
     	fscanf(fp,"%d", &edge_id);      //read the mapping of dual_to_G edges
     	map_dual_g[*ei] = edge_id;		//map the dual to the prev read value
-    	map_g_dual[edges_G[edge_id]] = curr_edge;  //reverse map the edges[G] to curr_edge value
+    	map_g_dual[*edges_G[edge_id]] = curr_edge;  //reverse map the edges[G] to curr_edge value
     	curr_edge++;
     }
 
 	file_dual_in.fileClose();
 
-	boost_sp_tree<Graph,Vertex> tree(0, G);
+	boost_sp_tree<Graph,Vertex,Edge_Weight_Array> tree(0, G, edge_weights);
 	tree.boost_calculate_sp();
 
 	return 0;
