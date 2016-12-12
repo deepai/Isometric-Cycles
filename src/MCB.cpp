@@ -40,6 +40,7 @@ typedef graph_traits<Graph>::vertex_descriptor Vertex;
 typedef property_map<Graph, edge_weight_t>::type Edge_Weight_Array;
 typedef property_map<Graph, edge_index_t>::type Edge_Index_Array;
 typedef graph_traits<Graph>::edge_iterator Edge_Iterator;
+typedef graph_traits<Graph>::out_edge_iterator Out_Edge_Iterator;
 
 int main(int argc, char *argv[])
 {
@@ -132,12 +133,47 @@ int main(int argc, char *argv[])
 		count_case_all_equal += sp_trees[i]->boost_calculate_sp();
 	}
 
-	cout << count_case_all_equal << endl;
+cout << count_case_all_equal << endl;
+
+vector<vector<boost_cycle<Vertex,Edge_Iterator> > > sp_cycles(num_nodes_G);
+
+#ifndef PRINT_CYCLES
+#pragma omp parallel for reduction(+:count_case_all_equal)
+#endif
+	for(int i = 0; i < num_nodes_G; ++i)
+	{
+		Vertex U,V;
+
+		for(int j = 0; j < num_edges_G; j++)
+		{
+			if(!sp_trees[i]->is_tree_edge[j])
+			{
+				ei = edges_G_Iterator[j];
+				U = source(*ei, G);
+				V = target(*ei, G);
+
+				if(sp_trees[i]->is_cycle(U, V))
+				{
+					sp_cycles[i].push_back(sp_trees[i]->get_cycle(ei, U, V));
+				}
+			}
+		}
+	}
 
 	#pragma omp parallel for
 	for(int i=0; i < num_nodes_G; i++)
 		if(sp_trees[i] != NULL)
 			delete sp_trees[i];
+
+	#pragma omp parallel for
+	for(int i=0; i < num_nodes_G; i++)
+	{
+		sp_cycles[i].clear();
+	}
+
+
+	sp_trees.clear();
+	sp_cycles.clear();
 
 	return 0;
 }

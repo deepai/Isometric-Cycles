@@ -127,3 +127,9 @@ void boost_sp_tree<Graph,Vertex,Edge_Weight_Array,Edge_Index_Array>::calculate_l
 		new_parent = Parent[new_parent];
 	}
 }
+
+template <class Graph,class Vertex,class Edge_Weight_Array, class Edge_Index_Array>
+inline bool boost_sp_tree<Graph,Vertex,Edge_Weight_Array,Edge_Index_Array>::is_cycle(Vertex U, Vertex V)
+{
+	return (Min_node[U] == root && Min_node[V] == root && S[U] != S[V] && S[U] != -1 && S[V] != -1);
+}
