@@ -5,8 +5,11 @@
 #include <boost/graph/properties.hpp>
 #include <boost/graph/graph_traits.hpp>
 #include <boost/property_map/property_map.hpp>
+#include <boost/graph/filtered_graph.hpp>
+#include <queue>
 #include <boost/ref.hpp>
 #include <vector>
+#include <bitset>
 
 #include <cstdio>
 #include <cstdlib>
@@ -80,8 +83,8 @@ int main(int argc, char *argv[])
 	file_dual_in.get_nodes_edges(num_nodes_dual_G, num_edges_dual_G);
 
 	Edge_Iterator *edges_G_Iterator = new Edge_Iterator[num_edges_G]; //stores edge iterator of G
-	Edge_Iterator *edges_dual_G_Iterator = new Edge_Iterator[num_edges_G]; //stores edge iterator of dual_G
 	Edge_Index_Array edges_G = get(edge_index, G); //Used to get index of edge corresponding to the given edge
+	Edge_Index_Array edges_dual_G = get(edge_index, G); //Used to get index of edge corresponding to the given edge
 
 	int edge_id = 0, curr_edge = 0;
 
@@ -92,9 +95,6 @@ int main(int argc, char *argv[])
     }
 
 	Graph dual_G(num_nodes_dual_G);
-
-	vector<int> map_g_dual(num_edges_G); //index containing mapping from g to dual edges
-	vector<int> map_dual_g(num_edges_G); //index containing mapping from dual to g edges
 
 	edge_weights = get(edge_weight, dual_G);
 
@@ -111,10 +111,8 @@ int main(int argc, char *argv[])
 
 	for(boost::tie(ei, ei_end) = edges(G); ei != ei_end; ++ei)
     {
-    	edges_dual_G_Iterator[curr_edge] = ei;  //First store dual_G edges
     	fscanf(fp,"%d", &edge_id);      //read the mapping of dual_to_G edges
-    	map_dual_g[curr_edge] = edge_id;		//map the dual to the prev read value
-    	map_g_dual[edge_id] = curr_edge;  //reverse map the edges[G] to curr_edge value
+    	edges_dual_G[*ei] = curr_edge;
     	curr_edge++;
     }
 
@@ -135,8 +133,8 @@ int main(int argc, char *argv[])
 
 cout << count_case_all_equal << endl;
 
-vector<vector<boost_cycle<Vertex,Edge_Iterator> > > sp_cycles(num_nodes_G);
-vector<boost_cycle<Vertex, Edge_Iterator> > list_cycles;
+vector<vector<boost_cycle<Vertex> > > sp_cycles(num_nodes_G);
+vector<boost_cycle<Vertex> > list_cycles;
 
 #ifndef PRINT_CYCLES
 #pragma omp parallel for reduction(+:count_case_all_equal)
@@ -168,8 +166,29 @@ vector<boost_cycle<Vertex, Edge_Iterator> > list_cycles;
 		total_num_cycles += sp_cycles[i].size();
 	}
 
+	vector<vector<bool> > MCB_TABLE(total_num_cycles, vector<bool>(num_nodes_dual_G - 1));
+
+	//We consider the first node in the dual graph as the external face.
+	Vertex external_face = 0;
+
+	#pragma omp parallel for schedule(dynamic)
+	for(int i=0; i<num_nodes_G; i++)
+	{
+		filter<Edge_Index_Array> filter_s(sp_trees[i]->is_tree_edge, edges_dual_G);
+		filtered_graph<Graph, filter<Edge_Index_Array> > fg(G, filter_s);
+
+		for(int j=0; j < sp_cycles[i].size(); j++)
+		{
+			sp_trees[i]->is_tree_edge[sp_cycles[i][j].edge_id] = true;
+
+
+			sp_trees[i]->is_tree_edge[sp_cycles[i][j].edge_id] = false;
+		}
+	}
+
 	list_cycles.resize(total_num_cycles);
 	total_num_cycles = 0;
+
 
 	for(int i = 0;i < num_nodes_G; i++)
 	{
@@ -178,6 +197,8 @@ vector<boost_cycle<Vertex, Edge_Iterator> > list_cycles;
 			list_cycles[total_num_cycles++] = sp_cycles[i][j]; 
 		}
 	}
+
+	std::sort(list_cycles.begin(), list_cycles.end());
 
 	cout << "Total Number of Cycles = " << total_num_cycles << endl;
 
@@ -190,14 +211,15 @@ vector<boost_cycle<Vertex, Edge_Iterator> > list_cycles;
 	sp_cycles.clear();
 
 
-	std::sort(list_cycles.begin(), list_cycles.end());
 
+	MCB_TABLE.clear();
 
 	#pragma omp parallel for
 	for(int i=0; i < num_nodes_G; i++)
 		if(sp_trees[i] != NULL)
 			delete sp_trees[i];
 
+	list_cycles.clear();
 	sp_trees.clear();
 
 	return 0;

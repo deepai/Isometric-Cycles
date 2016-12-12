@@ -3,7 +3,6 @@
 
 #include <boost/graph/dijkstra_shortest_paths.hpp>
 #include <boost/property_map/property_map.hpp>
-#include <queue>
 #include <vector>
 #include <utility>
 #include <cmath>
@@ -19,14 +18,14 @@ struct compare_pair {
 	}
 };
 
-template <class Vertex,class Edge_Iterator>
+template <class Vertex>
 struct boost_cycle
 {
 	Vertex root;
 	int edge_weight;
-	Edge_Iterator edge;
+	int edge_id;
 
-	boost_cycle(Vertex root, Edge_Iterator iter,int weight) : root(root), edge(iter), edge_weight(weight)
+	boost_cycle(Vertex root, int edge_id,int weight) : root(root), edge_id(edge_id), edge_weight(weight)
 	{}
 
 	bool operator<(const boost_cycle &rhs) const
@@ -35,6 +34,19 @@ struct boost_cycle
 	}
 
 	boost_cycle(){}
+};
+
+template <typename EdgeIndex>
+struct filter {
+	filter() { }
+	filter(vector<bool> &is_tree_edge, EdgeIndex &indexes) : edge_indexes(indexes) , is_tree_edge(is_tree_edge){ }
+
+	template <typename Edge>
+	bool operator()(const Edge& e) const {
+		return !is_tree_edge[edge_indexes[e]];
+	}
+	vector<bool> &is_tree_edge;
+	EdgeIndex &edge_indexes;
 };
 
 template <class Graph,class Vertex,class Edge_Weight_Array, class Edge_Index_Array>
@@ -72,9 +84,9 @@ struct boost_sp_tree
 	
 	inline bool is_cycle(Vertex U, Vertex V);
 	
-	boost_cycle<Vertex,Edge_Iterator> get_cycle(Edge_Iterator &iter, Vertex U, Vertex V)
+	boost_cycle<Vertex> get_cycle(Edge_Iterator &iter, Vertex U, Vertex V)
 	{
-		boost_cycle<Vertex,Edge_Iterator> cycle_b(root, iter, D[U] + D[V] + edge_weights[*iter]);
+		boost_cycle<Vertex> cycle_b(root, edge_indexes[*iter], D[U] + D[V] + edge_weights[*iter]);
 		return cycle_b;
 	}
 };
