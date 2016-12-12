@@ -175,15 +175,20 @@ vector<boost_cycle<Vertex> > list_cycles;
 	for(int i=0; i<num_nodes_G; i++)
 	{
 		filter<Edge_Index_Array> filter_s(sp_trees[i]->is_tree_edge, edges_dual_G);
-		filtered_graph<Graph, filter<Edge_Index_Array> > fg(G, filter_s);
+		filtered_graph<Graph, filter<Edge_Index_Array> > fg(dual_G, filter_s);
+
+		vector<bool> visited_array(num_nodes_dual_G);
 
 		for(int j=0; j < sp_cycles[i].size(); j++)
 		{
 			sp_trees[i]->is_tree_edge[sp_cycles[i][j].edge_id] = true;
 
 
+
 			sp_trees[i]->is_tree_edge[sp_cycles[i][j].edge_id] = false;
 		}
+
+		visited_array.clear();
 	}
 
 	list_cycles.resize(total_num_cycles);
