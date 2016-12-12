@@ -115,7 +115,8 @@ int main(int argc, char *argv[])
 
 	file_dual_in.fileClose();
 
-	boost_sp_tree<Graph,Vertex> (0, G);
+	boost_sp_tree<Graph,Vertex> tree(0, G);
+	tree.boost_calculate_sp();
 
 	return 0;
 }

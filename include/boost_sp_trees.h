@@ -8,7 +8,7 @@
 using namespace std;
 using namespace boost;
 
-template<class Vertex>
+template<class Vertex, class Graph>
 struct SP_Info
 {
 	Vertex root;
@@ -17,8 +17,9 @@ struct SP_Info
 	vector<int> S;
 	vector<int> Min_node;
 	vector<bool> is_tree_edge;
+	Graph &G;
 
-	SP_Info(Vertex root, int num_nodes, int num_edges) : root(root)
+	SP_Info(Vertex root, int num_nodes, int num_edges, Graph &g) : root(root), G(g)
 	{
 		Parent.resize(num_nodes);
 		D.resize(num_nodes);
@@ -36,22 +37,29 @@ struct SP_Info
 		is_tree_edge.clear();
 	}
 };
-template<class Vertex>
+template<class Vertex,class Graph>
 struct SP_VISITOR : public default_dijkstra_visitor
 {
-	SP_Info<Vertex> &info;
-	SP_VISITOR(SP_Info<Vertex> &info) : info(info){}
+	typedef typename graph_traits<Graph>::edge_descriptor Edge;
+	typedef typename property_map<Graph, edge_weight_t>::type Edge_Weight_Array;
+	SP_Info<Vertex,Graph> &info;
+
+	Edge_Weight_Array edge_weights;
+
+	SP_VISITOR(SP_Info<Vertex,Graph> &info) : info(info){
+		edge_weights = get(edge_weight, info.G);
+	}
 };
 
 template <class Graph,class Vertex>
 struct boost_sp_tree
 {
 	Graph &input_graph;
-	SP_Info<Vertex> info;
+	SP_Info<Vertex,Graph> info;
 
-	SP_VISITOR<Vertex> vis;
+	SP_VISITOR<Vertex,Graph> vis;
 
-	boost_sp_tree(Vertex root, Graph &G) : input_graph(G) , info(root, num_vertices(G), num_edges(G)) , vis(info)
+	boost_sp_tree(Vertex root, Graph &G) : input_graph(G) , info(root, num_vertices(G), num_edges(G), G) , vis(info)
 	{
 
 	}
