@@ -12,6 +12,8 @@
 #include <cstdlib>
 #include <ctime>
 
+#include <omp.h>
+
 #include "FileReader.h"
 #include "FileWriter.h"
 
@@ -76,20 +78,22 @@ int main(int argc, char *argv[])
 
 	file_dual_in.get_nodes_edges(num_nodes_dual_G, num_edges_dual_G);
 
-	Edge_Iterator *edges_G = new Edge_Iterator[num_edges_G]; //stores edges of G
-	Edge_Iterator *edges_dual_G = new Edge_Iterator[num_edges_G]; //stores edges of dual_G
+	Edge_Iterator *edges_G_Iterator = new Edge_Iterator[num_edges_G]; //stores edge iterator of G
+	Edge_Iterator *edges_dual_G_Iterator = new Edge_Iterator[num_edges_G]; //stores edge iterator of dual_G
+	Edge_Index_Array edges_G = get(edge_index, G); //Used to get index of edge corresponding to the given edge
 
 	int edge_id = 0, curr_edge = 0;
 
 	for(boost::tie(ei, ei_end) = edges(G); ei != ei_end; ++ei)
     {
-    	edges_G[edge_id++] = ei; //stores edges of G in the array
+    	edges_G_Iterator[edge_id] = ei; //stores edges of G in the array
+    	edges_G[*ei] = edge_id++;
     }
 
 	Graph dual_G(num_nodes_dual_G);
 
-	Edge_Index_Array map_g_dual = get(edge_index, G); //maps edges from G to dual
-	Edge_Index_Array map_dual_g = get(edge_index, dual_G); //maps edges from dual to G
+	vector<int> map_g_dual(num_edges_G); //index containing mapping from g to dual edges
+	vector<int> map_dual_g(num_edges_G); //index containing mapping from dual to g edges
 
 	edge_weights = get(edge_weight, dual_G);
 
@@ -106,17 +110,34 @@ int main(int argc, char *argv[])
 
 	for(boost::tie(ei, ei_end) = edges(G); ei != ei_end; ++ei)
     {
-    	edges_dual_G[curr_edge] = ei;  //First store dual_G edges
+    	edges_dual_G_Iterator[curr_edge] = ei;  //First store dual_G edges
     	fscanf(fp,"%d", &edge_id);      //read the mapping of dual_to_G edges
-    	map_dual_g[*ei] = edge_id;		//map the dual to the prev read value
-    	map_g_dual[*edges_G[edge_id]] = curr_edge;  //reverse map the edges[G] to curr_edge value
+    	map_dual_g[curr_edge] = edge_id;		//map the dual to the prev read value
+    	map_g_dual[edge_id] = curr_edge;  //reverse map the edges[G] to curr_edge value
     	curr_edge++;
     }
 
 	file_dual_in.fileClose();
 
-	boost_sp_tree<Graph,Vertex,Edge_Weight_Array> tree(0, G, edge_weights);
-	tree.boost_calculate_sp();
+	std::vector<boost_sp_tree<Graph,Vertex,Edge_Weight_Array,Edge_Index_Array>*> sp_trees(num_nodes_G);
+
+	int count_case_all_equal = 0;
+//calculate and construct shortest path trees.
+#ifndef PRINT_CYCLES
+#pragma omp parallel for reduction(+:count_case_all_equal)
+#endif
+	for(int i = 0; i < num_nodes_G; ++i)
+	{
+		sp_trees[i] = new boost_sp_tree<Graph,Vertex,Edge_Weight_Array,Edge_Index_Array>(i, G, edge_weights, edges_G);
+		count_case_all_equal += sp_trees[i]->boost_calculate_sp();
+	}
+
+	cout << count_case_all_equal << endl;
+
+	#pragma omp parallel for
+	for(int i=0; i < num_nodes_G; i++)
+		if(sp_trees[i] != NULL)
+			delete sp_trees[i];
 
 	return 0;
 }

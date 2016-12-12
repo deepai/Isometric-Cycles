@@ -1,8 +1,8 @@
 #include "boost_sp_trees.h"
 #include <boost/graph/dijkstra_shortest_paths.hpp>
 
-template <class Graph,class Vertex,class Edge_Weight_Array>
-int boost_sp_tree<Graph,Vertex,Edge_Weight_Array>::boost_calculate_sp()
+template <class Graph,class Vertex,class Edge_Weight_Array,class Edge_Index_Array>
+int boost_sp_tree<Graph,Vertex,Edge_Weight_Array,Edge_Index_Array>::boost_calculate_sp()
 {
 #ifdef PRINT
 	printf("SP root = %d, ", root_node + 1);
@@ -10,6 +10,7 @@ int boost_sp_tree<Graph,Vertex,Edge_Weight_Array>::boost_calculate_sp()
 
 	std::vector<bool> in_tree(num_nodes);
 	std::vector<int> path_length(num_nodes);
+	std::vector<int> edge_offsets(count_edges);
 
 	std::priority_queue<std::pair<int, int>, std::vector<std::pair<int, int>>,
 		compare_pair> pq;
@@ -19,6 +20,7 @@ int boost_sp_tree<Graph,Vertex,Edge_Weight_Array>::boost_calculate_sp()
 	Parent[root] = -1;
 	Min_node[root] = root;
 	S[root] = -1;
+	edge_offsets[root] = -1;
 
 	Vertex src = root;
 
@@ -29,7 +31,7 @@ int boost_sp_tree<Graph,Vertex,Edge_Weight_Array>::boost_calculate_sp()
 	typename boost::graph_traits<Graph>::out_edge_iterator adj_begin,adj_end;
 	typename boost::graph_traits<Graph>::edge_descriptor edge;
 
-	int edge_weight, dest;
+	int edge_weight, dest, edge_index;
 
 	while(!pq.empty())
 	{
@@ -53,6 +55,7 @@ int boost_sp_tree<Graph,Vertex,Edge_Weight_Array>::boost_calculate_sp()
 			}
 
 			Min_node[val.first] = std::min(val.first, Min_node[Parent[val.first]]);
+			is_tree_edge[edge_offsets[val.first]] = true;
 		}
 
 		#ifdef PRINT
@@ -65,6 +68,7 @@ int boost_sp_tree<Graph,Vertex,Edge_Weight_Array>::boost_calculate_sp()
 		{
 			edge = *adj_begin;
 			edge_weight = edge_weights[edge];
+			edge_index = edge_indexes[edge];
 
 			dest = target(edge, input_graph);
 
@@ -74,12 +78,14 @@ int boost_sp_tree<Graph,Vertex,Edge_Weight_Array>::boost_calculate_sp()
 				pq.push({dest, D[dest]});
 				Parent[dest] = val.first;
 				path_length[dest] = path_length[val.first] + 1;
+				edge_offsets[dest] = edge_index;
 			}
 			else if(D[val.first] + edge_weight < D[dest])
 			{
 				if(path_length[val.first] + 1 < path_length[dest])
 				{
 					Parent[dest] = val.first;
+					edge_offsets[dest] = edge_index;
 					path_length[dest] = path_length[val.first] + 1;
 				}
 				else if(path_length[val.first] + 1 == path_length[dest])
@@ -92,6 +98,7 @@ int boost_sp_tree<Graph,Vertex,Edge_Weight_Array>::boost_calculate_sp()
 					if(min_new < min_existing)
 					{
 						Parent[dest] = val.first;
+						edge_offsets[dest] = edge_index;
 						path_length[dest] = path_length[val.first] + 1;
 					}
 
@@ -101,11 +108,15 @@ int boost_sp_tree<Graph,Vertex,Edge_Weight_Array>::boost_calculate_sp()
 		}
 	}
 
+	in_tree.clear();
+	path_length.clear();
+	edge_offsets.clear();
+
 	return count_case_allequal;
 }
 
-template <class Graph,class Vertex,class Edge_Weight_Array>
-void boost_sp_tree<Graph,Vertex,Edge_Weight_Array>::calculate_lca(int existing_parent, int new_parent, int &min_existing, int &min_new)
+template <class Graph,class Vertex,class Edge_Weight_Array, class Edge_Index_Array>
+void boost_sp_tree<Graph,Vertex,Edge_Weight_Array,Edge_Index_Array>::calculate_lca(int existing_parent, int new_parent, int &min_existing, int &min_new)
 {
 	while(existing_parent != new_parent)
 	{

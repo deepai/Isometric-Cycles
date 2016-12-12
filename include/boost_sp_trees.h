@@ -19,11 +19,12 @@ struct compare_pair {
 	}
 };
 
-template <class Graph,class Vertex,class Edge_Weight_Array>
+template <class Graph,class Vertex,class Edge_Weight_Array, class Edge_Index_Array>
 struct boost_sp_tree
 {
 	Graph &input_graph;
 	Edge_Weight_Array &edge_weights;
+	Edge_Index_Array &edge_indexes;
 
 	int num_nodes, count_edges;
 
@@ -34,18 +35,36 @@ struct boost_sp_tree
 	vector<int> Min_node;
 	vector<bool> is_tree_edge;
 
-	boost_sp_tree(Vertex root, Graph &G, Edge_Weight_Array &edge_weights) : root(root), input_graph(G) ,num_nodes(num_vertices(G)), count_edges(num_edges(G)), edge_weights(edge_weights)
+	boost_sp_tree(Vertex root, Graph &G, Edge_Weight_Array &edge_weights, Edge_Index_Array &edge_indexes) 
+		: root(root), input_graph(G) ,num_nodes(num_vertices(G)),
+		  count_edges(num_edges(G)), edge_weights(edge_weights), edge_indexes(edge_indexes) 
 	{
 		Parent.resize(num_nodes);
 		D.resize(num_nodes, INT_MAX);
 		S.resize(num_nodes, -1);
 		Min_node.resize(num_nodes);
-		is_tree_edge.resize(count_edges);
+		is_tree_edge.resize(count_edges, false);
 		edge_weights = get(edge_weight, G);
 	}
 
 	int boost_calculate_sp();
 	void calculate_lca(int existing_parent, int new_parent, int &min_existing, int &min_new);
+};
+
+template <class Graph,class Vertex,class Edge_Iterator>
+struct boost_cycle
+{
+	Vertex root;
+	int edge_weight;
+	Edge_Iterator edge;
+
+	boost_cycle(Vertex root, Edge_Iterator &iter,int weight) : root(root), edge(iter), edge_weight(weight)
+	{}
+
+	bool operator<(const boost_cycle &rhs) const
+	{
+		return edge_weight < rhs.edge_weight;
+	}
 };
 
 #include "boost_sp_trees.hpp"
