@@ -24,15 +24,17 @@ struct boost_cycle
 {
 	Vertex root;
 	int edge_weight;
-	Edge_Iterator &edge;
+	Edge_Iterator edge;
 
-	boost_cycle(Vertex root, Edge_Iterator &iter,int weight) : root(root), edge(iter), edge_weight(weight)
+	boost_cycle(Vertex root, Edge_Iterator iter,int weight) : root(root), edge(iter), edge_weight(weight)
 	{}
 
 	bool operator<(const boost_cycle &rhs) const
 	{
 		return edge_weight < rhs.edge_weight;
 	}
+
+	boost_cycle(){}
 };
 
 template <class Graph,class Vertex,class Edge_Weight_Array, class Edge_Index_Array>

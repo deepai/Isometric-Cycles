@@ -136,6 +136,7 @@ int main(int argc, char *argv[])
 cout << count_case_all_equal << endl;
 
 vector<vector<boost_cycle<Vertex,Edge_Iterator> > > sp_cycles(num_nodes_G);
+vector<boost_cycle<Vertex, Edge_Iterator> > list_cycles;
 
 #ifndef PRINT_CYCLES
 #pragma omp parallel for reduction(+:count_case_all_equal)
@@ -160,20 +161,44 @@ vector<vector<boost_cycle<Vertex,Edge_Iterator> > > sp_cycles(num_nodes_G);
 		}
 	}
 
-	#pragma omp parallel for
-	for(int i=0; i < num_nodes_G; i++)
-		if(sp_trees[i] != NULL)
-			delete sp_trees[i];
+	int total_num_cycles = 0;
+	#pragma omp parallel for reduction(+:total_num_cycles)
+	for(int i=0 ;i < num_nodes_G; i++)
+	{
+		total_num_cycles += sp_cycles[i].size();
+	}
+
+	list_cycles.resize(total_num_cycles);
+	total_num_cycles = 0;
+
+	for(int i = 0;i < num_nodes_G; i++)
+	{
+		for(int j=0; j < sp_cycles[i].size(); j++)
+		{
+			list_cycles[total_num_cycles++] = sp_cycles[i][j]; 
+		}
+	}
+
+	cout << "Total Number of Cycles = " << total_num_cycles << endl;
+
 
 	#pragma omp parallel for
 	for(int i=0; i < num_nodes_G; i++)
 	{
 		sp_cycles[i].clear();
 	}
+	sp_cycles.clear();
 
+
+	std::sort(list_cycles.begin(), list_cycles.end());
+
+
+	#pragma omp parallel for
+	for(int i=0; i < num_nodes_G; i++)
+		if(sp_trees[i] != NULL)
+			delete sp_trees[i];
 
 	sp_trees.clear();
-	sp_cycles.clear();
 
 	return 0;
 }
