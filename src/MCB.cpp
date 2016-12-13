@@ -166,6 +166,33 @@ vector<int> cumulative_sizes(num_nodes_G, 0);
 
 	vector<vector<bool> > MCB_TABLE(total_num_cycles, vector<bool>(num_nodes_dual_G));
 
+	//STORE THE LIST OF CYCLES IN A SINGLE LIST AND MAINTAIN REVERSE MAPPING
+	list_cycles.resize(total_num_cycles);
+	total_num_cycles = 0;
+
+
+	for(int i = 0; i < num_nodes_G; i++)
+	{
+		for(int j=0; j < sp_cycles[i].size(); j++)
+		{
+			list_cycles[total_num_cycles].first = sp_cycles[i][j];
+			list_cycles[total_num_cycles++].second = total_num_cycles;
+		}
+	}
+
+	std::sort(list_cycles.begin(), list_cycles.end(),
+			  []( const pair<boost_cycle<Vertex>,int>  &a, const pair<boost_cycle<Vertex>,int> &b ) { return a.first < b.first; });
+
+	cout << "Total Number of Cycles = " << total_num_cycles << endl;
+
+	vector<int> reverse_cycle_list_mapping(total_num_cycles);
+
+	//THE FOLLOWING EXECUTION MAPS THE POST SORTED CYCLES TO ITS ORIGINAL INDEX i.e. ORIGINAL CYCLE INDEX is present in new location
+	for(int i = 0; i < total_num_cycles; i++)
+	{
+		reverse_cycle_list_mapping[list_cycles[i].second] = i;
+	}
+
 	//We consider the first node in the dual graph as the external face.
 	Vertex external_face = 0;
 
@@ -198,7 +225,7 @@ vector<int> cumulative_sizes(num_nodes_G, 0);
 	 							visited_array[tid],
 	 							sp_trees[i]->is_tree_edge,
 	 							MCB_TABLE,
-	 							cumulative_sizes[i] + j);
+	 							reverse_cycle_list_mapping[cumulative_sizes[i] + j]);
 
 			sp_trees[i]->is_tree_edge[sp_cycles[i][j].edge_id] = false;
 		}
@@ -210,24 +237,6 @@ vector<int> cumulative_sizes(num_nodes_G, 0);
 
 	visited_array.clear();
 
-	list_cycles.resize(total_num_cycles);
-	total_num_cycles = 0;
-
-
-	for(int i = 0;i < num_nodes_G; i++)
-	{
-		for(int j=0; j < sp_cycles[i].size(); j++)
-		{
-			list_cycles[total_num_cycles].first = sp_cycles[i][j];
-			list_cycles[total_num_cycles++].second = total_num_cycles;
-		}
-	}
-
-	std::sort(list_cycles.begin(), list_cycles.end(),
-			  []( const pair<boost_cycle<Vertex>,int>  &a, const pair<boost_cycle<Vertex>,int> &b ) { return a.first < b.first; });
-
-	cout << "Total Number of Cycles = " << total_num_cycles << endl;
-
 
 	#pragma omp parallel for
 	for(int i=0; i < num_nodes_G; i++)
@@ -235,6 +244,9 @@ vector<int> cumulative_sizes(num_nodes_G, 0);
 		sp_cycles[i].clear();
 	}
 	sp_cycles.clear();
+
+	cumulative_sizes.clear();
+	reverse_cycle_list_mapping.clear();
 
 	//Next Work Here onwards...
 
