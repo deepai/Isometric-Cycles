@@ -122,7 +122,7 @@ int main(int argc, char *argv[])
 cout << count_case_all_equal << endl;
 
 vector<vector<boost_cycle<Vertex> > > sp_cycles(num_nodes_G);
-vector<boost_cycle<Vertex> > list_cycles;
+vector<pair<boost_cycle<Vertex>,int> > list_cycles;
 vector<int> cumulative_sizes(num_nodes_G, 0);
 
 #ifndef PRINT_CYCLES
@@ -218,11 +218,13 @@ vector<int> cumulative_sizes(num_nodes_G, 0);
 	{
 		for(int j=0; j < sp_cycles[i].size(); j++)
 		{
-			list_cycles[total_num_cycles++] = sp_cycles[i][j]; 
+			list_cycles[total_num_cycles].first = sp_cycles[i][j];
+			list_cycles[total_num_cycles++].second = total_num_cycles;
 		}
 	}
 
-	std::sort(list_cycles.begin(), list_cycles.end());
+	std::sort(list_cycles.begin(), list_cycles.end(),
+			  []( const pair<boost_cycle<Vertex>,int>  &a, const pair<boost_cycle<Vertex>,int> &b ) { return a.first < b.first; });
 
 	cout << "Total Number of Cycles = " << total_num_cycles << endl;
 
@@ -234,7 +236,7 @@ vector<int> cumulative_sizes(num_nodes_G, 0);
 	}
 	sp_cycles.clear();
 
-
+	//Next Work Here onwards...
 
 	MCB_TABLE.clear();
 
