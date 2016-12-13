@@ -36,19 +36,6 @@ struct boost_cycle
 	boost_cycle(){}
 };
 
-template <typename EdgeIndex>
-struct filter {
-	filter() { }
-	filter(vector<bool> &is_tree_edge, EdgeIndex &indexes) : edge_indexes(indexes) , is_tree_edge(is_tree_edge){ }
-
-	template <typename Edge>
-	bool operator()(const Edge& e) const {
-		return !is_tree_edge[edge_indexes[e]];
-	}
-	vector<bool> &is_tree_edge;
-	EdgeIndex &edge_indexes;
-};
-
 template <class Graph,class Vertex,class Edge_Weight_Array, class Edge_Index_Array>
 struct boost_sp_tree
 {
