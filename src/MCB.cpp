@@ -172,8 +172,9 @@ vector<int> cumulative_sizes(num_nodes_G, 0);
 	list_cycles.resize(total_num_cycles);
 	vector<int> reverse_cycle_list_mapping(total_num_cycles);
 
-	total_num_cycles = 0;
+	cout << "Total Number of Cycles = " << total_num_cycles << endl;
 
+	total_num_cycles = 0;
 
 	for(int i = 0; i < num_nodes_G; i++)
 	{
@@ -207,7 +208,7 @@ vector<int> cumulative_sizes(num_nodes_G, 0);
 	cout << "Number of threads is " << num_threads << endl;
 
 #ifndef PRINT_CYCLES
-	#pragma omp parallel for schedule(dynamic)
+	#pragma omp parallel for
 #endif
 	for(int i=0; i<num_nodes_G; i++)
 	{
