@@ -206,7 +206,9 @@ vector<int> cumulative_sizes(num_nodes_G, 0);
 
 	cout << "Number of threads is " << num_threads << endl;
 
+#ifndef PRINT_CYCLES
 	#pragma omp parallel for schedule(dynamic)
+#endif
 	for(int i=0; i<num_nodes_G; i++)
 	{
 		int tid = omp_get_thread_num();
@@ -220,6 +222,10 @@ vector<int> cumulative_sizes(num_nodes_G, 0);
 			V = target(*edges_dual_G_Iterator[map_g_dual[sp_cycles[i][j].edge_id]], dual_G); //get target vertex corresponding to edge of dual_G
 
 			assert(U < num_nodes_dual_G && V < num_nodes_dual_G);
+
+			#ifdef PRINT_CYCLES
+				cout << "For Cycle: " << cumulative_sizes[i] + j << ",new pos: " << reverse_cycle_list_mapping[cumulative_sizes[i] + j] << endl;
+			#endif
 
 			mark_internal_faces(dual_G,
 	 							edges_dual_G,

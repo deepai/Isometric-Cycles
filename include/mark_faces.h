@@ -79,12 +79,19 @@ void mark_internal_faces(Graph &dual_graph,
 			src = bfs_queue.front();
 			MCB_TABLE[cycle_index][src] = true;
 
+			#ifdef PRINT_CYCLES
+				cout << src + 1 << " ";
+			#endif
+
 			bfs_queue.pop();
 
 			boost::tie(ei, ei_end) = out_edges(src, dual_graph);
 
 			for(; ei != ei_end; ++ei)
 			{
+				if(is_tree_edge[edges_G[*ei]])
+					continue;
+
 				dest = target(*ei, dual_graph);
 				
 				if(!visited[dest])
@@ -94,13 +101,22 @@ void mark_internal_faces(Graph &dual_graph,
 				}
 			}
 		}
+		#ifdef PRINT_CYCLES
+			cout << endl;
+		#endif
 	}
 	else // the first tree is the internal face
 	{
 		for(auto it = list_vertices.begin(); it != list_vertices.end(); it++)
 		{
 			MCB_TABLE[cycle_index][*it] = true;
+			#ifdef PRINT_CYCLES
+				cout << *it + 1 << " ";
+			#endif
 		}
+		#ifdef PRINT_CYCLES
+			cout << endl;
+		#endif
 	}
 
 	list_vertices.clear();

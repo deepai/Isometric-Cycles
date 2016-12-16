@@ -77,7 +77,7 @@ struct boost_sp_tree
 
 		#ifdef PRINT_CYCLES
 
-			cout << "c: " << U + 1 << " " << V + 1 << ", ";
+			cout << "c: (root "<< root + 1<< "), " << U + 1 << " " << V + 1 << ", ";
 
 			while(Parent[U] != root)
 			{
