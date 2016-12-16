@@ -254,10 +254,7 @@ vector<int> cumulative_sizes(num_nodes_G, 0);
 
 	#ifdef PRINT_CYCLES
 
-		for(int i=0; i<list_cycles.size(); i++)
-		{
-			cout << list_cycles[i].first.root << " " <<  list_cycles[i].first.total_weight << endl;
-		}
+		cout << "printing the MCB matrix..." << endl;
 
 		for(int i=0; i < MCB_TABLE.size(); i++)
 		{

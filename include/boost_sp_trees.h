@@ -74,6 +74,29 @@ struct boost_sp_tree
 	boost_cycle<Vertex> get_cycle(Edge_Iterator &iter, Vertex U, Vertex V)
 	{
 		boost_cycle<Vertex> cycle_b(root, edge_indexes[*iter], D[U] + D[V] + edge_weights[*iter]);
+
+		#ifdef PRINT_CYCLES
+
+			cout << "c: " << U + 1 << " " << V + 1 << ", ";
+
+			while(Parent[U] != root)
+			{
+				cout << Parent[U] + 1 << " " << U + 1 << ", ";
+				U = Parent[U];
+			}
+			cout << Parent[U] + 1 << " " << U + 1 << ", ";
+
+			while(Parent[V] != root)
+			{
+				cout << Parent[V] + 1 << " " << V + 1 << ", ";
+				V = Parent[V];
+			}
+			cout << Parent[V] + 1 << " " << V + 1 << ", ";
+
+			cout << "wt: " << cycle_b.total_weight << endl;
+
+		#endif
+
 		return cycle_b;
 	}
 };
