@@ -22,15 +22,15 @@ template <class Vertex>
 struct boost_cycle
 {
 	Vertex root;
-	int edge_weight;
+	int total_weight;
 	int edge_id;
 
-	boost_cycle(Vertex root, int edge_id,int weight) : root(root), edge_id(edge_id), edge_weight(weight)
+	boost_cycle(Vertex root, int edge_id,int weight) : root(root), edge_id(edge_id), total_weight(weight)
 	{}
 
 	bool operator<(const boost_cycle &rhs) const
 	{
-		return edge_weight < rhs.edge_weight;
+		return total_weight < rhs.total_weight;
 	}
 
 	boost_cycle(){}

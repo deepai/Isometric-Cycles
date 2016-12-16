@@ -149,6 +149,8 @@ vector<int> cumulative_sizes(num_nodes_G, 0);
 		}
 	}
 
+	//prefix sum to perform cumulative size calculation of the array.
+
 	int prev = 0, curr;
 	for(int i=0; i < num_nodes_G; i++)
 	{
@@ -168,6 +170,8 @@ vector<int> cumulative_sizes(num_nodes_G, 0);
 
 	//STORE THE LIST OF CYCLES IN A SINGLE LIST AND MAINTAIN REVERSE MAPPING
 	list_cycles.resize(total_num_cycles);
+	vector<int> reverse_cycle_list_mapping(total_num_cycles);
+
 	total_num_cycles = 0;
 
 
@@ -176,7 +180,8 @@ vector<int> cumulative_sizes(num_nodes_G, 0);
 		for(int j=0; j < sp_cycles[i].size(); j++)
 		{
 			list_cycles[total_num_cycles].first = sp_cycles[i][j];
-			list_cycles[total_num_cycles++].second = total_num_cycles;
+			list_cycles[total_num_cycles].second = total_num_cycles;
+			total_num_cycles++;
 		}
 	}
 
@@ -185,7 +190,6 @@ vector<int> cumulative_sizes(num_nodes_G, 0);
 
 	cout << "Total Number of Cycles = " << total_num_cycles << endl;
 
-	vector<int> reverse_cycle_list_mapping(total_num_cycles);
 
 	//THE FOLLOWING EXECUTION MAPS THE POST SORTED CYCLES TO ITS ORIGINAL INDEX i.e. ORIGINAL CYCLE INDEX is present in new location
 	for(int i = 0; i < total_num_cycles; i++)
@@ -247,6 +251,23 @@ vector<int> cumulative_sizes(num_nodes_G, 0);
 
 	cumulative_sizes.clear();
 	reverse_cycle_list_mapping.clear();
+
+	#ifdef PRINT_CYCLES
+
+		for(int i=0; i<list_cycles.size(); i++)
+		{
+			cout << list_cycles[i].first.root << " " <<  list_cycles[i].first.total_weight << endl;
+		}
+
+		for(int i=0; i < MCB_TABLE.size(); i++)
+		{
+			for(int j=0; j< MCB_TABLE[i].size(); j++)
+			{
+				cout << MCB_TABLE[i][j] << " ";
+			}
+			cout << endl;
+		}
+	#endif
 
 	//Next Work Here onwards...
 
