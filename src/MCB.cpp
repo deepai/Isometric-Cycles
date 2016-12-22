@@ -20,6 +20,7 @@
 #include "common.h"
 #include "boost_sp_trees.h"
 #include "mark_faces.h"
+#include "atomic_linked_list.h"
 
 using namespace std;
 using namespace boost;
@@ -166,7 +167,8 @@ vector<int> cumulative_sizes(num_nodes_G, 0);
 		total_num_cycles += sp_cycles[i].size();
 	}
 
-	vector<vector<bool> > MCB_TABLE(total_num_cycles, vector<bool>(num_nodes_dual_G));
+	//vector<vector<bool> > MCB_TABLE(total_num_cycles, vector<bool>(num_nodes_dual_G));
+	vector<list_elements<int> > MCB_TABLE(num_nodes_dual_G); 
 
 	//STORE THE LIST OF CYCLES IN A SINGLE LIST AND MAINTAIN REVERSE MAPPING
 	list_cycles.resize(total_num_cycles);
@@ -228,7 +230,7 @@ vector<int> cumulative_sizes(num_nodes_G, 0);
 				cout << "For Cycle: " << cumulative_sizes[i] + j << ",new pos: " << reverse_cycle_list_mapping[cumulative_sizes[i] + j] << endl;
 			#endif
 
-			mark_internal_faces(dual_G,
+			mark_internal_faces<int>(dual_G,
 	 							edges_dual_G,
 	 							external_face,
 	 							U,
@@ -262,18 +264,13 @@ vector<int> cumulative_sizes(num_nodes_G, 0);
 	#ifdef PRINT_CYCLES
 
 		cout << "printing the MCB matrix..." << endl;
-
-		for(int i=0; i < MCB_TABLE.size(); i++)
-		{
-			for(int j=0; j< MCB_TABLE[i].size(); j++)
-			{
-				cout << MCB_TABLE[i][j] << " ";
-			}
-			cout << endl;
-		}
+		
 	#endif
 
 	//Next Work Here onwards...
+	#pragma omp parallel for
+		for(int i=0; i < num_nodes_dual_G; i++)
+			MCB_TABLE[i].clear();
 
 	MCB_TABLE.clear();
 

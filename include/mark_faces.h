@@ -6,7 +6,9 @@
 #include <forward_list>
 
 #include "common.h"
+#include "atomic_linked_list.h"
 
+template<typename T>
 void mark_internal_faces(Graph &dual_graph,
 	 Edge_Index_Array &edges_G,
 	 Vertex external_face,
@@ -14,7 +16,7 @@ void mark_internal_faces(Graph &dual_graph,
 	 Vertex V,
 	 vector<bool> &visited,
 	 vector<bool> &is_tree_edge,
-	 vector<vector<bool> > &MCB_TABLE,
+	 vector<list_elements<T> > &MCB_TABLE,
 	 int cycle_index)
 {
 	vector<int> list_vertices;
@@ -77,7 +79,7 @@ void mark_internal_faces(Graph &dual_graph,
 		while(!bfs_queue.empty())
 		{
 			src = bfs_queue.front();
-			MCB_TABLE[cycle_index][src] = true;
+			MCB_TABLE[src].push(cycle_index);
 
 			#ifdef PRINT_CYCLES
 				cout << src + 1 << " ";
@@ -109,7 +111,7 @@ void mark_internal_faces(Graph &dual_graph,
 	{
 		for(auto it = list_vertices.begin(); it != list_vertices.end(); it++)
 		{
-			MCB_TABLE[cycle_index][*it] = true;
+			MCB_TABLE[*it].push(cycle_index);
 			#ifdef PRINT_CYCLES
 				cout << *it + 1 << " ";
 			#endif
