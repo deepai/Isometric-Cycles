@@ -68,6 +68,11 @@ struct list_elements
 
     	mtx.unlock();
     }
+
+    int size()
+    {
+        return count_elements;
+    }
 };
 
 #endif

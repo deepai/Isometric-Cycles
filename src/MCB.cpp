@@ -21,6 +21,7 @@
 #include "boost_sp_trees.h"
 #include "mark_faces.h"
 #include "atomic_linked_list.h"
+#include "prefix_sum.h"
 
 using namespace std;
 using namespace boost;
@@ -152,13 +153,7 @@ vector<int> cumulative_sizes(num_nodes_G, 0);
 
 	//prefix sum to perform cumulative size calculation of the array.
 
-	int prev = 0, curr;
-	for(int i=0; i < num_nodes_G; i++)
-	{
-		curr = cumulative_sizes[i];
-		cumulative_sizes[i] = prev;
-		prev += curr;
-	}
+	prefixsum_inplace(cumulative_sizes.data(), num_nodes_G);
 
 	int total_num_cycles = 0;
 	#pragma omp parallel for reduction(+:total_num_cycles)
@@ -261,6 +256,13 @@ vector<int> cumulative_sizes(num_nodes_G, 0);
 	cumulative_sizes.clear();
 	reverse_cycle_list_mapping.clear();
 
+	#pragma omp parallel for
+	for(int i=0; i < num_nodes_G; i++)
+		if(sp_trees[i] != NULL)
+			delete sp_trees[i];
+
+	sp_trees.clear();
+
 	#ifdef PRINT_CYCLES
 
 		cout << "printing the MCB matrix..." << endl;
@@ -268,19 +270,23 @@ vector<int> cumulative_sizes(num_nodes_G, 0);
 	#endif
 
 	//Next Work Here onwards...
+	cumulative_sizes.resize(num_nodes_dual_G);
+
+	#pragma omp parallel for
+	for (int i = 0; i < num_nodes_dual_G; ++i)
+	{
+		cumulative_sizes[i] = MCB_TABLE[i].size();
+	}
+
+	prefixsum_inplace(cumulative_sizes.data(), num_nodes_dual_G);
+
+
 	#pragma omp parallel for
 		for(int i=0; i < num_nodes_dual_G; i++)
 			MCB_TABLE[i].clear();
 
 	MCB_TABLE.clear();
-
-	#pragma omp parallel for
-	for(int i=0; i < num_nodes_G; i++)
-		if(sp_trees[i] != NULL)
-			delete sp_trees[i];
-
 	list_cycles.clear();
-	sp_trees.clear();
 
 	return 0;
 }
