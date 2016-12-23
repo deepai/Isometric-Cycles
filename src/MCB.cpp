@@ -264,6 +264,18 @@ vector<int> cumulative_sizes(num_nodes_G, 0);
 	#ifdef PRINT_CYCLES
 
 		cout << "printing the MCB matrix..." << endl;
+
+		for(int i = 0; i < num_nodes_dual_G; i++)
+		{
+			cout << "Face: " << i << ", ";
+			node<int> *temp = MCB_TABLE[i].head;
+			while(temp != nullptr)
+			{
+				cout << temp->data << " ";
+				temp = temp->next;
+			}
+			cout << endl;
+		}
 		
 	#endif
 
