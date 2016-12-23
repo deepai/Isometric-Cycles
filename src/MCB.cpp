@@ -22,6 +22,7 @@
 #include "mark_faces.h"
 #include "atomic_linked_list.h"
 #include "prefix_sum.h"
+#include "region_forest.h"
 
 using namespace std;
 using namespace boost;
