@@ -2,7 +2,7 @@
 #define _H_PREFIX_SUM
 
 template<typename T>
-T prefixsum_inplace(T *x, int N) {
+T prefixsum_inclusive(T *x, int N) {
     T *suma;
     T last_val = x[N - 1];
     #pragma omp parallel

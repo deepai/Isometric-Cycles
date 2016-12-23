@@ -153,7 +153,7 @@ vector<int> cumulative_sizes(num_nodes_G, 0);
 
 	//prefix sum to perform cumulative size calculation of the array.
 
-	prefixsum_inplace(cumulative_sizes.data(), num_nodes_G);
+	prefixsum_inclusive(cumulative_sizes.data(), num_nodes_G);
 
 	int total_num_cycles = 0;
 	#pragma omp parallel for reduction(+:total_num_cycles)
@@ -220,8 +220,10 @@ vector<int> cumulative_sizes(num_nodes_G, 0);
 
 				assert(U < num_nodes_dual_G && V < num_nodes_dual_G);
 
+				int offset_temp = (i==0)?0:cumulative_sizes[i - 1];
+
 				#ifdef PRINT_CYCLES
-					cout << "For Cycle: " << cumulative_sizes[i] + j << ",new pos: " << reverse_cycle_list_mapping[cumulative_sizes[i] + j] << endl;
+					cout << "For Cycle: " << offset_temp + j << ",new pos: " << reverse_cycle_list_mapping[offset_temp + j] << endl;
 				#endif
 
 				mark_internal_faces<int>(dual_G,
@@ -232,7 +234,7 @@ vector<int> cumulative_sizes(num_nodes_G, 0);
 		 							visited_array[tid],
 		 							sp_trees[i]->is_tree_edge,
 		 							MCB_TABLE,
-		 							reverse_cycle_list_mapping[cumulative_sizes[i] + j]);
+		 							reverse_cycle_list_mapping[offset_temp + j]);
 
 				sp_trees[i]->is_tree_edge[sp_cycles[i][j].edge_id] = false;
 			}
