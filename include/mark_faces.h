@@ -9,7 +9,7 @@
 #include "atomic_linked_list.h"
 
 template<typename T>
-void mark_internal_faces(Graph &dual_graph,
+int mark_internal_faces(Graph &dual_graph,
 	 Edge_Index_Array &edges_G,
 	 Vertex external_face,
 	 Vertex U,
@@ -21,6 +21,8 @@ void mark_internal_faces(Graph &dual_graph,
 {
 	vector<int> list_vertices;
 	fill(visited.begin(), visited.end(), 0);
+
+	int degree_count = 0;
 
 	typename graph_traits<Graph>::out_edge_iterator ei, ei_end;
 
@@ -81,6 +83,8 @@ void mark_internal_faces(Graph &dual_graph,
 			src = bfs_queue.front();
 			MCB_TABLE[src].push(cycle_index);
 
+			degree_count++;
+
 			#ifdef PRINT_CYCLES
 				cout << src + 1 << " ";
 			#endif
@@ -109,6 +113,7 @@ void mark_internal_faces(Graph &dual_graph,
 	}
 	else // the first tree is the internal face
 	{
+		degree_count += list_vertices.size();
 		for(auto it = list_vertices.begin(); it != list_vertices.end(); it++)
 		{
 			MCB_TABLE[*it].push(cycle_index);
@@ -122,6 +127,8 @@ void mark_internal_faces(Graph &dual_graph,
 	}
 
 	list_vertices.clear();
+
+	return degree_count;
 }
 
 

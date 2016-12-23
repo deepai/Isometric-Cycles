@@ -192,6 +192,7 @@ vector<int> cumulative_sizes(num_nodes_G, 0);
 	for(int i = 0; i < total_num_cycles; i++)
 	{
 		reverse_cycle_list_mapping[list_cycles[i].second] = i;
+		list_cycles[i].second = 0;
 	}
 
 	//We consider the first node in the dual graph as the external face.
@@ -226,7 +227,8 @@ vector<int> cumulative_sizes(num_nodes_G, 0);
 					cout << "For Cycle: " << offset_temp + j << ",new pos: " << reverse_cycle_list_mapping[offset_temp + j] << endl;
 				#endif
 
-				mark_internal_faces<int>(dual_G,
+				list_cycles[reverse_cycle_list_mapping[offset_temp + j]].second = 
+					mark_internal_faces<int>(dual_G,
 		 							edges_dual_G,
 		 							external_face,
 		 							U,
@@ -279,6 +281,12 @@ vector<int> cumulative_sizes(num_nodes_G, 0);
 			}
 			cout << endl;
 		}
+		cout << endl;
+
+		cout << "printing the cycles size..." << endl;
+		for(int i=0; i<total_num_cycles; i++)
+			cout << list_cycles[i].second << " ";
+		cout << endl;
 	#endif
 
 	#pragma omp parallel for
