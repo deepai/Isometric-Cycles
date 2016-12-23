@@ -157,10 +157,8 @@ vector<int> cumulative_sizes(num_nodes_G, 0);
 
 	int total_num_cycles = 0;
 	#pragma omp parallel for reduction(+:total_num_cycles)
-	for(int i=0 ;i < num_nodes_G; i++)
-	{
-		total_num_cycles += sp_cycles[i].size();
-	}
+		for(int i=0 ;i < num_nodes_G; i++)
+			total_num_cycles += sp_cycles[i].size();
 
 	//vector<vector<bool> > MCB_TABLE(total_num_cycles, vector<bool>(num_nodes_dual_G));
 	vector<list_elements<int> > MCB_TABLE(num_nodes_dual_G); 
@@ -190,6 +188,7 @@ vector<int> cumulative_sizes(num_nodes_G, 0);
 
 
 	//THE FOLLOWING EXECUTION MAPS THE POST SORTED CYCLES TO ITS ORIGINAL INDEX i.e. ORIGINAL CYCLE INDEX is present in new location
+#pragma omp parallel for
 	for(int i = 0; i < total_num_cycles; i++)
 	{
 		reverse_cycle_list_mapping[list_cycles[i].second] = i;
@@ -207,59 +206,58 @@ vector<int> cumulative_sizes(num_nodes_G, 0);
 #ifndef PRINT_CYCLES
 	#pragma omp parallel for
 #endif
-	for(int i=0; i<num_nodes_G; i++)
-	{
-		int tid = omp_get_thread_num();
-		Vertex U, V;
-
-		for(int j=0; j < sp_cycles[i].size(); j++)
+		for(int i=0; i<num_nodes_G; i++)
 		{
-			sp_trees[i]->is_tree_edge[sp_cycles[i][j].edge_id] = true;
+			int tid = omp_get_thread_num();
+			Vertex U, V;
 
-			U = source(*edges_dual_G_Iterator[map_g_dual[sp_cycles[i][j].edge_id]], dual_G); //get source vertex corresponding to edge of dual_G
-			V = target(*edges_dual_G_Iterator[map_g_dual[sp_cycles[i][j].edge_id]], dual_G); //get target vertex corresponding to edge of dual_G
+			for(int j=0; j < sp_cycles[i].size(); j++)
+			{
+				sp_trees[i]->is_tree_edge[sp_cycles[i][j].edge_id] = true;
 
-			assert(U < num_nodes_dual_G && V < num_nodes_dual_G);
+				U = source(*edges_dual_G_Iterator[map_g_dual[sp_cycles[i][j].edge_id]], dual_G); //get source vertex corresponding to edge of dual_G
+				V = target(*edges_dual_G_Iterator[map_g_dual[sp_cycles[i][j].edge_id]], dual_G); //get target vertex corresponding to edge of dual_G
 
-			#ifdef PRINT_CYCLES
-				cout << "For Cycle: " << cumulative_sizes[i] + j << ",new pos: " << reverse_cycle_list_mapping[cumulative_sizes[i] + j] << endl;
-			#endif
+				assert(U < num_nodes_dual_G && V < num_nodes_dual_G);
 
-			mark_internal_faces<int>(dual_G,
-	 							edges_dual_G,
-	 							external_face,
-	 							U,
-	 							V,
-	 							visited_array[tid],
-	 							sp_trees[i]->is_tree_edge,
-	 							MCB_TABLE,
-	 							reverse_cycle_list_mapping[cumulative_sizes[i] + j]);
+				#ifdef PRINT_CYCLES
+					cout << "For Cycle: " << cumulative_sizes[i] + j << ",new pos: " << reverse_cycle_list_mapping[cumulative_sizes[i] + j] << endl;
+				#endif
 
-			sp_trees[i]->is_tree_edge[sp_cycles[i][j].edge_id] = false;
+				mark_internal_faces<int>(dual_G,
+		 							edges_dual_G,
+		 							external_face,
+		 							U,
+		 							V,
+		 							visited_array[tid],
+		 							sp_trees[i]->is_tree_edge,
+		 							MCB_TABLE,
+		 							reverse_cycle_list_mapping[cumulative_sizes[i] + j]);
+
+				sp_trees[i]->is_tree_edge[sp_cycles[i][j].edge_id] = false;
+			}
 		}
-	}
 
 	#pragma omp parallel for
-	for(int i=0; i < num_threads; i++)
-		visited_array[i].clear();
+		for(int i=0; i < num_threads; i++)
+			visited_array[i].clear();
 
 	visited_array.clear();
 
 
 	#pragma omp parallel for
-	for(int i=0; i < num_nodes_G; i++)
-	{
-		sp_cycles[i].clear();
-	}
+		for(int i=0; i < num_nodes_G; i++)
+			sp_cycles[i].clear();
+
 	sp_cycles.clear();
 
 	cumulative_sizes.clear();
 	reverse_cycle_list_mapping.clear();
 
 	#pragma omp parallel for
-	for(int i=0; i < num_nodes_G; i++)
-		if(sp_trees[i] != NULL)
-			delete sp_trees[i];
+		for(int i=0; i < num_nodes_G; i++)
+			if(sp_trees[i] != NULL)
+				delete sp_trees[i];
 
 	sp_trees.clear();
 
