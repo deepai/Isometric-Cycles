@@ -2,8 +2,9 @@
 #define _H_PREFIX_SUM
 
 template<typename T>
-void prefixsum_inplace(T *x, int N) {
+T prefixsum_inplace(T *x, int N) {
     T *suma;
+    T last_val = x[N - 1];
     #pragma omp parallel
     {
         const int ithread = omp_get_thread_num();
@@ -31,6 +32,7 @@ void prefixsum_inplace(T *x, int N) {
         }
     }
     delete[] suma;
+    return (last_val + x[N - 1]);
 }
 
 #endif

@@ -269,18 +269,6 @@ vector<int> cumulative_sizes(num_nodes_G, 0);
 		
 	#endif
 
-	//Next Work Here onwards...
-	cumulative_sizes.resize(num_nodes_dual_G);
-
-	#pragma omp parallel for
-	for (int i = 0; i < num_nodes_dual_G; ++i)
-	{
-		cumulative_sizes[i] = MCB_TABLE[i].size();
-	}
-
-	prefixsum_inplace(cumulative_sizes.data(), num_nodes_dual_G);
-
-
 	#pragma omp parallel for
 		for(int i=0; i < num_nodes_dual_G; i++)
 			MCB_TABLE[i].clear();
