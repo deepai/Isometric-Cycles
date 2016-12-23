@@ -263,22 +263,22 @@ vector<int> cumulative_sizes(num_nodes_G, 0);
 
 	sp_trees.clear();
 
+	//use dynamic threading to sort the cycle_lists for each face.
+	#pragma omp parallel for schedule(dynamic)
+		for(int i=0; i<num_nodes_dual_G; i++)
+			MCB_TABLE[i].head.sort();
+
 	#ifdef PRINT_CYCLES
-
 		cout << "printing the MCB matrix..." << endl;
-
 		for(int i = 0; i < num_nodes_dual_G; i++)
 		{
 			cout << "Face: " << i << ", ";
-			node<int> *temp = MCB_TABLE[i].head;
-			while(temp != nullptr)
+			for(auto &iter : MCB_TABLE[i].head)
 			{
-				cout << temp->data << " ";
-				temp = temp->next;
+				cout << iter << " ";
 			}
 			cout << endl;
 		}
-		
 	#endif
 
 	#pragma omp parallel for
