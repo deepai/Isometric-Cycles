@@ -26,9 +26,15 @@ T prefixsum_inclusive(T *x, int N) {
         for(int i=0; i<(ithread+1); i++) {
             offset += suma[i];
         }
+
+        int prev = 0, curr = 0;
+
         #pragma omp for schedule(static)
-        for (int i=0; i<N; i++) {
-            x[i] += offset;
+        for(int i = 0; i < N; i++)
+        {
+            curr = x[i];
+            x[i] = prev + offset;
+            prev = curr; 
         }
     }
     delete[] suma;

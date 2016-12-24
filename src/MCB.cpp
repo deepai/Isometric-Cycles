@@ -126,7 +126,7 @@ cout << count_case_all_equal << endl;
 
 vector<vector<boost_cycle<Vertex> > > sp_cycles(num_nodes_G);
 vector<pair<boost_cycle<Vertex>,int> > list_cycles;
-vector<int> cumulative_sizes(num_nodes_G, 0);
+vector<int> cumulative_sizes(num_nodes_G + 1, 0);
 
 #ifndef PRINT_CYCLES
 #pragma omp parallel for reduction(+:count_case_all_equal)
@@ -222,7 +222,7 @@ vector<int> cumulative_sizes(num_nodes_G, 0);
 
 				assert(U < num_nodes_dual_G && V < num_nodes_dual_G);
 
-				int offset_temp = (i==0)?0:cumulative_sizes[i - 1];
+				int offset_temp = cumulative_sizes[i];
 
 				#ifdef PRINT_CYCLES
 					cout << "For Cycle: " << offset_temp + j << ",new pos: " << reverse_cycle_list_mapping[offset_temp + j] << endl;
@@ -289,6 +289,8 @@ vector<int> cumulative_sizes(num_nodes_G, 0);
 			cout << list_cycles[i].second << " ";
 		cout << endl;
 	#endif
+
+	region_tree forest(num_nodes_dual_G, total_num_cycles);
 
 	#pragma omp parallel for
 		for(int i=0; i < num_nodes_dual_G; i++)
