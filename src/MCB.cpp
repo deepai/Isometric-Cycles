@@ -33,10 +33,11 @@ string input_dual_graph;
 
 int main(int argc, char *argv[])
 {
-	if(argc < 3)
+	if(argc < 4)
 	{
 		printf("First Argument is the Input Graph\n");
 		printf("Second Argument is the Dual Graph\n");
+		printf("Third Argument is Face ID of the external Face( 1 based index)\n");
 		return 0;
 	}
 	input_graph = string(argv[1]);
@@ -197,7 +198,9 @@ vector<int> cumulative_sizes(num_nodes_G + 1, 0);
 	}
 
 	//We consider the first node in the dual graph as the external face.
-	Vertex external_face = 0;
+	Vertex external_face = atoi(argv[3]) - 1;
+
+	cout << "External face is " << external_face + 1 << endl;
 
 	int num_threads = omp_get_max_threads();
 
