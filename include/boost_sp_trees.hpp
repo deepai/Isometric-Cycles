@@ -4,8 +4,8 @@
 template <class Graph,class Vertex,class Edge_Weight_Array,class Edge_Index_Array>
 int boost_sp_tree<Graph,Vertex,Edge_Weight_Array,Edge_Index_Array>::boost_calculate_sp()
 {
-#ifdef PRINT
-	printf("SP root = %d, ", root_node + 1);
+#ifdef PRINT_CYCLES
+	printf("SP root = %d, ", root + 1);
 #endif
 
 	std::vector<bool> in_tree(num_nodes);
@@ -58,8 +58,9 @@ int boost_sp_tree<Graph,Vertex,Edge_Weight_Array,Edge_Index_Array>::boost_calcul
 			is_tree_edge[edge_offsets[val.first]] = true;
 		}
 
-		#ifdef PRINT
-			printf("%d - %d, ", Parent[val.first] + 1, val.first + 1);
+		#ifdef PRINT_CYCLES
+			if(val.first != root)
+				printf("%d - %d, ", Parent[val.first] + 1, val.first + 1);
 		#endif
 
 		tie(adj_begin,adj_end) = out_edges(val.first, input_graph);
@@ -108,6 +109,10 @@ int boost_sp_tree<Graph,Vertex,Edge_Weight_Array,Edge_Index_Array>::boost_calcul
 		}
 	}
 
+	#ifdef PRINT_CYCLES
+		printf("End OF SP_TREE\n");
+	#endif
+
 	in_tree.clear();
 	path_length.clear();
 	edge_offsets.clear();
@@ -131,5 +136,11 @@ void boost_sp_tree<Graph,Vertex,Edge_Weight_Array,Edge_Index_Array>::calculate_l
 template <class Graph,class Vertex,class Edge_Weight_Array, class Edge_Index_Array>
 inline bool boost_sp_tree<Graph,Vertex,Edge_Weight_Array,Edge_Index_Array>::is_cycle(Vertex U, Vertex V)
 {
-	return (Min_node[U] == root && Min_node[V] == root && S[U] != S[V] && S[U] != -1 && S[V] != -1);
+	bool value = (Min_node[U] == root && Min_node[V] == root && S[U] != S[V]);
+
+	#ifdef PRINT_CYCLES
+		printf("Root = %d,(%d - %d), Min(U): %d, Min(V): %d,S[U]: %d,S[V]: %d, is a cycle = %s\n",root + 1, U + 1, V + 1, Min_node[U] + 1, Min_node[V] + 1, S[U] + 1, S[V] + 1, value?"true":"false" );
+	#endif
+
+	return value;
 }

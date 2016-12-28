@@ -278,10 +278,10 @@ vector<int> cumulative_sizes(num_nodes_G + 1, 0);
 		cout << "printing the MCB matrix..." << endl;
 		for(int i = 0; i < num_nodes_dual_G; i++)
 		{
-			cout << "Face: " << i << ", ";
+			cout << "Face: " << i + 1 << ", ";
 			for(auto &iter : MCB_TABLE[i].head)
 			{
-				cout << iter << " ";
+				cout << iter + 1 << " ";
 			}
 			cout << endl;
 		}

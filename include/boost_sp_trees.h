@@ -79,19 +79,21 @@ struct boost_sp_tree
 
 			cout << "c: (root "<< root + 1<< "), " << U + 1 << " " << V + 1 << ", ";
 
-			while(Parent[U] != root)
+			while(U != root && Parent[U] != root)
 			{
 				cout << Parent[U] + 1 << " " << U + 1 << ", ";
 				U = Parent[U];
 			}
-			cout << Parent[U] + 1 << " " << U + 1 << ", ";
+			if(U != root)
+				cout << Parent[U] + 1 << " " << U + 1 << ", ";
 
-			while(Parent[V] != root)
+			while(V != root && Parent[V] != root)
 			{
 				cout << Parent[V] + 1 << " " << V + 1 << ", ";
 				V = Parent[V];
 			}
-			cout << Parent[V] + 1 << " " << V + 1 << ", ";
+			if(V != root)
+				cout << Parent[V] + 1 << " " << V + 1 << ", ";
 
 			cout << "wt: " << cycle_b.total_weight << endl;
 
